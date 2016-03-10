@@ -5,7 +5,7 @@ module FlowCommerce
       raise "ERROR: Token is required"
     end
 
-    base_url = opts[:base_url]
+    base_url = opts[:base_url].to_s.strip
     auth = Io::Flow::Catalog::V0::HttpClient::Authorization.basic(token)
 
     if base_url.empty?
