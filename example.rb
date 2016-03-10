@@ -29,8 +29,9 @@ end
 puts "Canada view: " + view.inspect
 puts ""
 
-items = client.view_items.get("demo", "canada", :limit => 10, :offset => 0)
-puts "# items in view: %s" % items.size
+items = client.view_items.get("demo", "canada", :number => ['N305', 'N306'], :limit => 100, :offset => 0)
+puts "# items found: %s" % items.size
+
 items.each do |item|
-  puts " - item %s"
+  puts " - item #{item.number}"
 end
