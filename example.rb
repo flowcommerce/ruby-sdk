@@ -13,10 +13,6 @@ token = IO.read(File.expand_path(token_file)).strip
 
 client = FlowCommerce.client(token)
 
-catalog = client.catalogs.get_catalog("demo")
-puts "Master catalog: " + catalog.inspect
-puts ""
-
 view = client.views.get("demo", :key => "canada").first
 
 if view.nil?
