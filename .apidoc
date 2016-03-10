@@ -1,0 +1,10 @@
+code:
+  flow:
+    common:
+      version: latest
+      generators:
+        ruby_client: lib/clients
+    catalog:
+      version: latest
+      generators:
+        ruby_client: lib/clients
