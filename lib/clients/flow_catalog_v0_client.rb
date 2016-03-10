@@ -506,32 +506,6 @@ module Io
 
           end
 
-          class CatalogForm
-
-            attr_reader :id
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id], 'CatalogForm')
-              @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              CatalogForm.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :id => id
-              }
-            end
-
-          end
-
           class CatalogItem
 
             attr_reader :id, :catalog, :data
