@@ -32,8 +32,8 @@ puts ""
 
 #items = client.view_items.get(org, "canada", :number => ['N305', 'N306'], :limit => 10, :offset => 0)
 items = client.view_items.get(org, "canada", :limit => 10, :offset => 0)
-puts "# items found: %s" % items.size
 
-items.each do |item|
-  puts " - item #{item.number}"
+items.each_with_index do |item, i|
+  price = item.content.first.price
+  puts "%s. item %s: %s %s" % [i, item.number, price.current.amount, price.current.currency]
 end
