@@ -41,7 +41,7 @@ end
 puts ""
 puts "Searching by specific item number"
 
-items = client.view_items.get(org, "canada", :number => ['R030G-8', 'R028CL-7'], :limit => 10, :offset => 0)
+items = client.view_items.get(org, "canada", :number => ['R030G-8', 'R028CL-7'])
 
 items.each_with_index do |item, i|
   price = item.content.first.price
