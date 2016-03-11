@@ -151,7 +151,7 @@ module Io
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
-            # Update item with the specified id.
+            # Update item with the specified id, creating if it does not exist.
             def put_by_id(organization, id, item_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('id', id, String)
@@ -233,7 +233,7 @@ module Io
               ::Io::Flow::Catalog::V0::Models::View.new(r)
             end
 
-            # Update view with the specified id.
+            # Update view with the specified id, creating if it does not exist.
             def put_by_id(organization, id, view_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('id', id, String)
@@ -326,7 +326,7 @@ module Io
               ::Io::Flow::Catalog::V0::Models::View.new(r)
             end
 
-            # Update view item with the specified id.
+            # Update view item with the specified id, creating if it does not exist.
             def put_by_id(organization, view, id, item_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('view', view, String)
@@ -545,7 +545,7 @@ module Io
               HttpClient::Preconditions.require_keys(opts, [:id, :timestamp, :type, :catalog], 'CatalogVersion')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @timestamp = HttpClient::Preconditions.assert_class('timestamp', HttpClient::Helper.to_date_time_iso8601(opts.delete(:timestamp)), DateTime)
-              @type = (x = opts.delete(:type); x.is_a?(::Io::Flow::Common::V0::Enums::ChangeType) ? x : ::Io::Flow::Common::V0::Enums::ChangeType.apply(x))
+              @type = (x = opts.delete(:type); x.is_a?(::Io::Flow::Common::V0::Models::ChangeType) ? x : ::Io::Flow::Common::V0::Models::ChangeType.apply(x))
               @catalog = (x = opts.delete(:catalog); x.is_a?(::Io::Flow::Catalog::V0::Models::Catalog) ? x : ::Io::Flow::Catalog::V0::Models::Catalog.new(x))
             end
 
@@ -642,7 +642,7 @@ module Io
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
               HttpClient::Preconditions.require_keys(opts, [:units, :value], 'Dimension')
-              @units = (x = opts.delete(:units); x.is_a?(::Io::Flow::Common::V0::Enums::UnitOfMeasurement) ? x : ::Io::Flow::Common::V0::Enums::UnitOfMeasurement.apply(x))
+              @units = (x = opts.delete(:units); x.is_a?(::Io::Flow::Common::V0::Models::UnitOfMeasurement) ? x : ::Io::Flow::Common::V0::Models::UnitOfMeasurement.apply(x))
               @value = HttpClient::Preconditions.assert_class('value', opts.delete(:value), String)
             end
 
@@ -965,7 +965,7 @@ module Io
               HttpClient::Preconditions.require_keys(opts, [:id, :timestamp, :type, :item], 'ItemVersion')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @timestamp = HttpClient::Preconditions.assert_class('timestamp', HttpClient::Helper.to_date_time_iso8601(opts.delete(:timestamp)), DateTime)
-              @type = (x = opts.delete(:type); x.is_a?(::Io::Flow::Common::V0::Enums::ChangeType) ? x : ::Io::Flow::Common::V0::Enums::ChangeType.apply(x))
+              @type = (x = opts.delete(:type); x.is_a?(::Io::Flow::Common::V0::Models::ChangeType) ? x : ::Io::Flow::Common::V0::Models::ChangeType.apply(x))
               @item = (x = opts.delete(:item); x.is_a?(::Io::Flow::Catalog::V0::Models::Item) ? x : ::Io::Flow::Catalog::V0::Models::Item.new(x))
             end
 
@@ -1227,7 +1227,7 @@ module Io
               HttpClient::Preconditions.require_keys(opts, [:id, :timestamp, :type, :view], 'ViewVersion')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @timestamp = HttpClient::Preconditions.assert_class('timestamp', HttpClient::Helper.to_date_time_iso8601(opts.delete(:timestamp)), DateTime)
-              @type = (x = opts.delete(:type); x.is_a?(::Io::Flow::Common::V0::Enums::ChangeType) ? x : ::Io::Flow::Common::V0::Enums::ChangeType.apply(x))
+              @type = (x = opts.delete(:type); x.is_a?(::Io::Flow::Common::V0::Models::ChangeType) ? x : ::Io::Flow::Common::V0::Models::ChangeType.apply(x))
               @view = (x = opts.delete(:view); x.is_a?(::Io::Flow::Catalog::V0::Models::View) ? x : ::Io::Flow::Catalog::V0::Models::View.new(x))
             end
 
