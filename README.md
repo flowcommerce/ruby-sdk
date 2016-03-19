@@ -33,3 +33,9 @@ The full API is documented at http://apidoc.me/flow/catalog/latest
 Also look at
 https://github.com/flowcommerce/ruby-sdk/blob/master/lib/clients/flow_catalog_v0_client.rb
 for the complete Ruby implementation of the API.
+
+
+## Release a new version of the gem
+
+    go run release.go
+
