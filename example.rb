@@ -33,8 +33,7 @@ puts "Listing up to 10 items in the canada view"
 items = client.view_items.get(org, "canada", :limit => 10, :offset => 0)
 
 items.each_with_index do |item, i|
-  price = item.content.first.price
-  puts "  %s. item %s: %s %s" % [i, item.number, price.current.amount, price.current.currency]
+  puts "  %s. item %s: %s %s" % [i, item.number, item.price, item.currency]
 end
 
 
@@ -44,6 +43,5 @@ puts "Searching by specific item number"
 items = client.view_items.get(org, "canada", :number => ['R030G-8', 'R028CL-7'])
 
 items.each_with_index do |item, i|
-  price = item.content.first.price
-  puts "  %s. item %s: %s %s" % [i, item.number, price.current.amount, price.current.currency]
+  puts "  %s. item %s: %s %s" % [i, item.number, item.price, item.currency]
 end
