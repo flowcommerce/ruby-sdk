@@ -12,6 +12,7 @@ func main() {
 	executor = executor.Add("dev tag --label micro")
 	executor = executor.Add("gem build flowcommerce.gemspec")
 	executor = executor.Add("gem push ./flowcommerce-*.gem")
+	executor = executor.Add("rm -f ./flowcommerce-*.gem")
 
 	executor.Run()
 }
