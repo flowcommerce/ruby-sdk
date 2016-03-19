@@ -4,7 +4,7 @@ Native ruby client to the Flow API (https://api.flow.io)
 
 ## Installation
 
-    gem install 'flowcommerce'
+    gem install flowcommerce
 
 
 ## Usage
