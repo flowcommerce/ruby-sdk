@@ -798,6 +798,34 @@ module Io
 
           end
 
+          class Measurement
+
+            attr_reader :value, :units
+
+            def initialize(incoming={})
+              opts = HttpClient::Helper.symbolize_keys(incoming)
+              HttpClient::Preconditions.require_keys(opts, [:value, :units], 'Measurement')
+              @value = HttpClient::Preconditions.assert_class('value', opts.delete(:value), String)
+              @units = (x = opts.delete(:units); x.is_a?(::Io::Flow::Common::V0::Models::UnitOfMeasurement) ? x : ::Io::Flow::Common::V0::Models::UnitOfMeasurement.apply(x))
+            end
+
+            def to_json
+              JSON.dump(to_hash)
+            end
+
+            def copy(incoming={})
+              Measurement.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+            end
+
+            def to_hash
+              {
+                :value => value,
+                :units => units.value
+              }
+            end
+
+          end
+
           class Name
 
             attr_reader :first, :last
@@ -917,7 +945,7 @@ module Io
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
               HttpClient::Preconditions.require_keys(opts, [:amount, :currency], 'Price')
-              @amount = HttpClient::Preconditions.assert_class('amount', opts.delete(:amount), String)
+              @amount = HttpClient::Preconditions.assert_class('amount', opts.delete(:amount), Float)
               @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
             end
 

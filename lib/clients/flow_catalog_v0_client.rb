@@ -64,12 +64,12 @@ module Io
             @catalogs ||= ::Io::Flow::Catalog::V0::Clients::Catalogs.new(self)
           end
 
-          def catalog_items
-            @catalog_items ||= ::Io::Flow::Catalog::V0::Clients::CatalogItems.new(self)
-          end
-
           def healthchecks
             @healthchecks ||= ::Io::Flow::Catalog::V0::Clients::Healthchecks.new(self)
+          end
+
+          def items
+            @items ||= ::Io::Flow::Catalog::V0::Clients::Items.new(self)
           end
 
           def views
@@ -98,7 +98,20 @@ module Io
 
           end
 
-          class CatalogItems
+          class Healthchecks
+
+            def initialize(client)
+              @client = HttpClient::Preconditions.assert_class('client', client, ::Io::Flow::Catalog::V0::Client)
+            end
+
+            def get_healthcheck
+              r = @client.request("/_internal_/healthcheck").get
+              ::Io::Flow::Common::V0::Models::Healthcheck.new(r)
+            end
+
+          end
+
+          class Items
 
             def initialize(client)
               @client = HttpClient::Preconditions.assert_class('client', client, ::Io::Flow::Catalog::V0::Client)
@@ -129,7 +142,7 @@ module Io
                 :query => (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String)),
                 :limit => HttpClient::Preconditions.assert_class('limit', (x = opts.delete(:limit); x.nil? ? 25 : x), Integer),
                 :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
-                :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "-created_at" : x), String)
+                :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "lower(name)" : x), String)
               }.delete_if { |k, v| v.nil? }
               r = @client.request("/#{CGI.escape(organization)}/catalog/items").with_query(query).get
               r.map { |x| ::Io::Flow::Catalog::V0::Models::Item.new(x) }
@@ -166,19 +179,6 @@ module Io
               HttpClient::Preconditions.assert_class('id', id, String)
               r = @client.request("/#{CGI.escape(organization)}/catalog/items/#{CGI.escape(id)}").delete
               nil
-            end
-
-          end
-
-          class Healthchecks
-
-            def initialize(client)
-              @client = HttpClient::Preconditions.assert_class('client', client, ::Io::Flow::Catalog::V0::Client)
-            end
-
-            def get_healthcheck
-              r = @client.request("/_internal_/healthcheck").get
-              ::Io::Flow::Common::V0::Models::Healthcheck.new(r)
             end
 
           end
@@ -302,7 +302,7 @@ module Io
                 :query => (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String)),
                 :limit => HttpClient::Preconditions.assert_class('limit', (x = opts.delete(:limit); x.nil? ? 25 : x), Integer),
                 :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
-                :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "-created_at" : x), String)
+                :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "lower(name)" : x), String)
               }.delete_if { |k, v| v.nil? }
               r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(view)}/items").with_query(query).get
               r.map { |x| ::Io::Flow::Catalog::V0::Models::Item.new(x) }
@@ -323,7 +323,7 @@ module Io
               HttpClient::Preconditions.assert_class('view', view, String)
               HttpClient::Preconditions.assert_class('item_form', item_form, ::Io::Flow::Catalog::V0::Models::ItemForm)
               r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(view)}/items").with_json(item_form.to_json).post
-              ::Io::Flow::Catalog::V0::Models::View.new(r)
+              ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
             # Update view item with the specified id, creating if it does not exist.
@@ -351,56 +351,46 @@ module Io
 
         module Models
 
-          class Event
+          class DimensionType
 
-            module Types
-              ITEM_CREATED = 'item_created' unless defined?(ITEM_CREATED)
-              ITEM_UPDATED = 'item_updated' unless defined?(ITEM_UPDATED)
-              ITEM_DELETED = 'item_deleted' unless defined?(ITEM_DELETED)
+            attr_reader :value
+
+            def initialize(value)
+              @value = HttpClient::Preconditions.assert_class('value', value, String)
             end
 
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:name], 'Event')
-              @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
-            end
-
-            def to_hash
-              subtype_to_hash.merge(:discriminator => @name)
-            end
-
-            def Event.from_json(hash)
-              HttpClient::Preconditions.assert_class('hash', hash, Hash)
-              case HttpClient::Helper.symbolize_keys(hash)[:discriminator]
-                when Types::ITEM_CREATED; ItemCreated.new(hash)
-                when Types::ITEM_UPDATED; ItemUpdated.new(hash)
-                when Types::ITEM_DELETED; ItemDeleted.new(hash)
-                else EventUndefinedType.new(:name => union_type_name)
+            # Returns the instance of DimensionType for this value, creating a new instance for an unknown value
+            def DimensionType.apply(value)
+              if value.instance_of?(DimensionType)
+                value
+              else
+                HttpClient::Preconditions.assert_class_or_nil('value', value, String)
+                value.nil? ? nil : (from_string(value) || DimensionType.new(value))
               end
             end
 
-          end
-
-          class EventUndefinedType < Event
-
-            attr_reader :name
-
-            def initialize(incoming={})
-              super(:name => 'undefined_type')
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
+            # Returns the instance of DimensionType for this value, or nil if not found
+            def DimensionType.from_string(value)
+              HttpClient::Preconditions.assert_class('value', value, String)
+              DimensionType.ALL.find { |v| v.value == value }
             end
 
-            def subtype_to_hash
-              raise 'Unable to serialize undefined type to json'
+            def DimensionType.ALL
+              @@all ||= [DimensionType.product, DimensionType.package]
             end
 
-            def copy(incoming={})
-              raise 'Operation not supported for undefined type'
+            # The standalone dimensions of an item.
+            def DimensionType.product
+              @@_product ||= DimensionType.new('product')
+            end
+
+            # The boxed dimensions of an item.
+            def DimensionType.package
+              @@_package ||= DimensionType.new('package')
             end
 
             def to_hash
-              raise 'Operation not supported for undefined type'
+              value
             end
 
           end
@@ -506,36 +496,6 @@ module Io
 
           end
 
-          class CatalogItem
-
-            attr_reader :id, :catalog, :data
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id, :catalog, :data], 'CatalogItem')
-              @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
-              @catalog = (x = opts.delete(:catalog); x.is_a?(::Io::Flow::Catalog::V0::Models::Catalog) ? x : ::Io::Flow::Catalog::V0::Models::Catalog.new(x))
-              @data = (x = opts.delete(:data); x.is_a?(::Io::Flow::Catalog::V0::Models::Item) ? x : ::Io::Flow::Catalog::V0::Models::Item.new(x))
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              CatalogItem.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :id => id,
-                :catalog => catalog.to_hash,
-                :data => data.to_hash
-              }
-            end
-
-          end
-
           class CatalogVersion
 
             attr_reader :id, :timestamp, :type, :catalog
@@ -568,82 +528,18 @@ module Io
 
           end
 
-          class Codes
-
-            attr_reader :harmonized
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              @harmonized = (x = opts.delete(:harmonized); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::Harmonized) ? x : ::Io::Flow::Catalog::V0::Models::Harmonized.new(x)))
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              Codes.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :harmonized => harmonized.nil? ? nil : harmonized.to_hash
-              }
-            end
-
-          end
-
-          class Content
-
-            attr_reader :dimensions, :locale, :price, :title, :brand, :categories, :description, :images, :policies
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:dimensions, :locale, :price], 'Content')
-              @dimensions = (x = opts.delete(:dimensions); x.is_a?(::Io::Flow::Catalog::V0::Models::Dimensions) ? x : ::Io::Flow::Catalog::V0::Models::Dimensions.new(x))
-              @locale = (x = opts.delete(:locale); x.is_a?(::Io::Flow::Catalog::V0::Models::Locale) ? x : ::Io::Flow::Catalog::V0::Models::Locale.new(x))
-              @price = (x = opts.delete(:price); x.is_a?(::Io::Flow::Catalog::V0::Models::Price) ? x : ::Io::Flow::Catalog::V0::Models::Price.new(x))
-              @title = HttpClient::Preconditions.assert_class('title', (x = opts.delete(:title); x.nil? ? "XXXX" : x), String)
-              @brand = (x = opts.delete(:brand); x.nil? ? nil : HttpClient::Preconditions.assert_class('brand', x, String))
-              @categories = HttpClient::Preconditions.assert_class('categories', (x = opts.delete(:categories); x.nil? ? [] : x), Array).map { |v| HttpClient::Preconditions.assert_class('categories', v, String) }
-              @description = (x = opts.delete(:description); x.nil? ? nil : HttpClient::Preconditions.assert_class('description', x, String))
-              @images = (x = opts.delete(:images); x.nil? ? nil : HttpClient::Preconditions.assert_class('images', x, Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Image) ? x : ::Io::Flow::Catalog::V0::Models::Image.new(x)) })
-              @policies = (x = opts.delete(:policies); x.nil? ? nil : HttpClient::Preconditions.assert_class('policies', x, Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Policy) ? x : ::Io::Flow::Catalog::V0::Models::Policy.new(x)) })
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              Content.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :dimensions => dimensions.to_hash,
-                :locale => locale.to_hash,
-                :price => price.to_hash,
-                :title => title,
-                :brand => brand,
-                :categories => categories,
-                :description => description,
-                :images => images.nil? ? nil : images.map { |o| o.to_hash },
-                :policies => policies.nil? ? nil : policies.map { |o| o.to_hash }
-              }
-            end
-
-          end
-
           class Dimension
 
-            attr_reader :units, :value
+            attr_reader :type, :depth, :length, :weight, :width
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:units, :value], 'Dimension')
-              @units = (x = opts.delete(:units); x.is_a?(::Io::Flow::Common::V0::Models::UnitOfMeasurement) ? x : ::Io::Flow::Common::V0::Models::UnitOfMeasurement.apply(x))
-              @value = HttpClient::Preconditions.assert_class('value', opts.delete(:value), String)
+              HttpClient::Preconditions.require_keys(opts, [:type], 'Dimension')
+              @type = (x = opts.delete(:type); x.is_a?(::Io::Flow::Catalog::V0::Models::DimensionType) ? x : ::Io::Flow::Catalog::V0::Models::DimensionType.apply(x))
+              @depth = (x = opts.delete(:depth); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Common::V0::Models::Measurement) ? x : ::Io::Flow::Common::V0::Models::Measurement.new(x)))
+              @length = (x = opts.delete(:length); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Common::V0::Models::Measurement) ? x : ::Io::Flow::Common::V0::Models::Measurement.new(x)))
+              @weight = (x = opts.delete(:weight); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Common::V0::Models::Measurement) ? x : ::Io::Flow::Common::V0::Models::Measurement.new(x)))
+              @width = (x = opts.delete(:width); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Common::V0::Models::Measurement) ? x : ::Io::Flow::Common::V0::Models::Measurement.new(x)))
             end
 
             def to_json
@@ -656,35 +552,7 @@ module Io
 
             def to_hash
               {
-                :units => units.value,
-                :value => value
-              }
-            end
-
-          end
-
-          class DimensionSpecification
-
-            attr_reader :depth, :length, :weight, :width
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              @depth = (x = opts.delete(:depth); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::Dimension) ? x : ::Io::Flow::Catalog::V0::Models::Dimension.new(x)))
-              @length = (x = opts.delete(:length); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::Dimension) ? x : ::Io::Flow::Catalog::V0::Models::Dimension.new(x)))
-              @weight = (x = opts.delete(:weight); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::Dimension) ? x : ::Io::Flow::Catalog::V0::Models::Dimension.new(x)))
-              @width = (x = opts.delete(:width); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::Dimension) ? x : ::Io::Flow::Catalog::V0::Models::Dimension.new(x)))
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              DimensionSpecification.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
+                :type => type.value,
                 :depth => depth.nil? ? nil : depth.to_hash,
                 :length => length.nil? ? nil : length.to_hash,
                 :weight => weight.nil? ? nil : weight.to_hash,
@@ -694,98 +562,15 @@ module Io
 
           end
 
-          class Dimensions
-
-            attr_reader :physical, :shipping
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              @physical = (x = opts.delete(:physical); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::DimensionSpecification) ? x : ::Io::Flow::Catalog::V0::Models::DimensionSpecification.new(x)))
-              @shipping = (x = opts.delete(:shipping); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::DimensionSpecification) ? x : ::Io::Flow::Catalog::V0::Models::DimensionSpecification.new(x)))
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              Dimensions.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :physical => physical.nil? ? nil : physical.to_hash,
-                :shipping => shipping.nil? ? nil : shipping.to_hash
-              }
-            end
-
-          end
-
-          class Harmonized
-
-            attr_reader :hs6, :hs10
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              @hs6 = (x = opts.delete(:hs6); x.nil? ? nil : HttpClient::Preconditions.assert_class('hs6', x, String))
-              @hs10 = (x = opts.delete(:hs10); x.nil? ? nil : HttpClient::Preconditions.assert_class('hs10', x, Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::HarmonizedGeo) ? x : ::Io::Flow::Catalog::V0::Models::HarmonizedGeo.new(x)) })
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              Harmonized.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :hs6 => hs6,
-                :hs10 => hs10.nil? ? nil : hs10.map { |o| o.to_hash }
-              }
-            end
-
-          end
-
-          class HarmonizedGeo
-
-            attr_reader :code, :from, :to
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              @code = (x = opts.delete(:code); x.nil? ? nil : HttpClient::Preconditions.assert_class('code', x, String))
-              @from = (x = opts.delete(:from); x.nil? ? nil : HttpClient::Preconditions.assert_class('from', x, String))
-              @to = (x = opts.delete(:to); x.nil? ? nil : HttpClient::Preconditions.assert_class('to', x, String))
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              HarmonizedGeo.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :code => code,
-                :from => from,
-                :to => to
-              }
-            end
-
-          end
-
           class Image
 
-            attr_reader :tags, :url
+            attr_reader :url, :tags
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
               HttpClient::Preconditions.require_keys(opts, [:url], 'Image')
-              @tags = HttpClient::Preconditions.assert_class('tags', (x = opts.delete(:tags); x.nil? ? [] : x), Array).map { |v| HttpClient::Preconditions.assert_class('tags', v, String) }
               @url = HttpClient::Preconditions.assert_class('url', opts.delete(:url), String)
+              @tags = HttpClient::Preconditions.assert_class('tags', (x = opts.delete(:tags); x.nil? ? [] : x), Array).map { |v| HttpClient::Preconditions.assert_class('tags', v, String) }
             end
 
             def to_json
@@ -798,8 +583,8 @@ module Io
 
             def to_hash
               {
-                :tags => tags,
-                :url => url
+                :url => url,
+                :tags => tags
               }
             end
 
@@ -807,17 +592,22 @@ module Io
 
           class Item
 
-            attr_reader :id, :number, :attributes, :codes, :content, :metadata
+            attr_reader :id, :number, :currency, :locale, :name, :price, :categories, :description, :dimensions, :images, :attributes
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id, :number, :codes, :content, :metadata], 'Item')
+              HttpClient::Preconditions.require_keys(opts, [:id, :number, :currency, :locale, :name, :price], 'Item')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @number = HttpClient::Preconditions.assert_class('number', opts.delete(:number), String)
+              @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
+              @locale = HttpClient::Preconditions.assert_class('locale', opts.delete(:locale), String)
+              @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
+              @price = HttpClient::Preconditions.assert_class('price', opts.delete(:price), Float)
+              @categories = HttpClient::Preconditions.assert_class('categories', (x = opts.delete(:categories); x.nil? ? [] : x), Array).map { |v| HttpClient::Preconditions.assert_class('categories', v, String) }
+              @description = (x = opts.delete(:description); x.nil? ? nil : HttpClient::Preconditions.assert_class('description', x, String))
+              @dimensions = HttpClient::Preconditions.assert_class('dimensions', (x = opts.delete(:dimensions); x.nil? ? [] : x), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Dimension) ? x : ::Io::Flow::Catalog::V0::Models::Dimension.new(x)) }
+              @images = HttpClient::Preconditions.assert_class('images', (x = opts.delete(:images); x.nil? ? [] : x), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Image) ? x : ::Io::Flow::Catalog::V0::Models::Image.new(x)) }
               @attributes = HttpClient::Preconditions.assert_class('attributes', (x = opts.delete(:attributes); x.nil? ? [] : x), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Attribute) ? x : ::Io::Flow::Catalog::V0::Models::Attribute.new(x)) }
-              @codes = (x = opts.delete(:codes); x.is_a?(::Io::Flow::Catalog::V0::Models::Codes) ? x : ::Io::Flow::Catalog::V0::Models::Codes.new(x))
-              @content = HttpClient::Preconditions.assert_class('content', opts.delete(:content), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Content) ? x : ::Io::Flow::Catalog::V0::Models::Content.new(x)) }
-              @metadata = HttpClient::Preconditions.assert_class('metadata', opts.delete(:metadata), Hash).inject({}) { |h, d| h[d[0]] = HttpClient::Preconditions.assert_class('metadata', d[1], String); h }
             end
 
             def to_json
@@ -832,64 +622,15 @@ module Io
               {
                 :id => id,
                 :number => number,
-                :attributes => attributes.map { |o| o.to_hash },
-                :codes => codes.to_hash,
-                :content => content.map { |o| o.to_hash },
-                :metadata => metadata
-              }
-            end
-
-          end
-
-          class ItemCreated < Event
-
-            attr_reader :id
-
-            def initialize(incoming={})
-              super(:name => Event::Types::ITEM_CREATED)
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id], 'ItemCreated')
-              @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              ItemCreated.new(subtype_to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def subtype_to_hash
-              {
-                :id => id
-              }
-            end
-
-          end
-
-          class ItemDeleted < Event
-
-            attr_reader :id
-
-            def initialize(incoming={})
-              super(:name => Event::Types::ITEM_DELETED)
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id], 'ItemDeleted')
-              @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              ItemDeleted.new(subtype_to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def subtype_to_hash
-              {
-                :id => id
+                :currency => currency,
+                :locale => locale,
+                :name => name,
+                :price => price,
+                :categories => categories,
+                :description => description,
+                :dimensions => dimensions.map { |o| o.to_hash },
+                :images => images.map { |o| o.to_hash },
+                :attributes => attributes.map { |o| o.to_hash }
               }
             end
 
@@ -897,16 +638,21 @@ module Io
 
           class ItemForm
 
-            attr_reader :attributes, :codes, :content, :metadata, :number
+            attr_reader :number, :currency, :locale, :name, :price, :categories, :description, :dimensions, :images, :attributes
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:codes, :content, :metadata, :number], 'ItemForm')
-              @attributes = HttpClient::Preconditions.assert_class('attributes', (x = opts.delete(:attributes); x.nil? ? [] : x), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Attribute) ? x : ::Io::Flow::Catalog::V0::Models::Attribute.new(x)) }
-              @codes = (x = opts.delete(:codes); x.is_a?(::Io::Flow::Catalog::V0::Models::Codes) ? x : ::Io::Flow::Catalog::V0::Models::Codes.new(x))
-              @content = HttpClient::Preconditions.assert_class('content', opts.delete(:content), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Content) ? x : ::Io::Flow::Catalog::V0::Models::Content.new(x)) }
-              @metadata = HttpClient::Preconditions.assert_class('metadata', opts.delete(:metadata), Hash).inject({}) { |h, d| h[d[0]] = HttpClient::Preconditions.assert_class('metadata', d[1], String); h }
+              HttpClient::Preconditions.require_keys(opts, [:number, :currency, :locale, :name, :price], 'ItemForm')
               @number = HttpClient::Preconditions.assert_class('number', opts.delete(:number), String)
+              @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
+              @locale = HttpClient::Preconditions.assert_class('locale', opts.delete(:locale), String)
+              @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
+              @price = HttpClient::Preconditions.assert_class('price', opts.delete(:price), Float)
+              @categories = (x = opts.delete(:categories); x.nil? ? nil : HttpClient::Preconditions.assert_class('categories', x, Array).map { |v| HttpClient::Preconditions.assert_class('categories', v, String) })
+              @description = (x = opts.delete(:description); x.nil? ? nil : HttpClient::Preconditions.assert_class('description', x, String))
+              @dimensions = (x = opts.delete(:dimensions); x.nil? ? nil : HttpClient::Preconditions.assert_class('dimensions', x, Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Dimension) ? x : ::Io::Flow::Catalog::V0::Models::Dimension.new(x)) })
+              @images = (x = opts.delete(:images); x.nil? ? nil : HttpClient::Preconditions.assert_class('images', x, Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Image) ? x : ::Io::Flow::Catalog::V0::Models::Image.new(x)) })
+              @attributes = (x = opts.delete(:attributes); x.nil? ? nil : HttpClient::Preconditions.assert_class('attributes', x, Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Attribute) ? x : ::Io::Flow::Catalog::V0::Models::Attribute.new(x)) })
             end
 
             def to_json
@@ -919,38 +665,16 @@ module Io
 
             def to_hash
               {
-                :attributes => attributes.map { |o| o.to_hash },
-                :codes => codes.to_hash,
-                :content => content.map { |o| o.to_hash },
-                :metadata => metadata,
-                :number => number
-              }
-            end
-
-          end
-
-          class ItemUpdated < Event
-
-            attr_reader :id
-
-            def initialize(incoming={})
-              super(:name => Event::Types::ITEM_UPDATED)
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id], 'ItemUpdated')
-              @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              ItemUpdated.new(subtype_to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def subtype_to_hash
-              {
-                :id => id
+                :number => number,
+                :currency => currency,
+                :locale => locale,
+                :name => name,
+                :price => price,
+                :categories => categories.nil? ? nil : categories,
+                :description => description,
+                :dimensions => dimensions.nil? ? nil : dimensions.map { |o| o.to_hash },
+                :images => images.nil? ? nil : images.map { |o| o.to_hash },
+                :attributes => attributes.nil? ? nil : attributes.map { |o| o.to_hash }
               }
             end
 
@@ -988,100 +712,20 @@ module Io
 
           end
 
-          class Locale
-
-            attr_reader :country, :language
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              @country = (x = opts.delete(:country); x.nil? ? nil : HttpClient::Preconditions.assert_class('country', x, String))
-              @language = (x = opts.delete(:language); x.nil? ? nil : HttpClient::Preconditions.assert_class('language', x, String))
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              Locale.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :country => country,
-                :language => language
-              }
-            end
-
-          end
-
-          class Policy
-
-            attr_reader :id
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id], 'Policy')
-              @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              Policy.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :id => id
-              }
-            end
-
-          end
-
-          class Price
-
-            attr_reader :current, :msrp
-
-            def initialize(incoming={})
-              opts = HttpClient::Helper.symbolize_keys(incoming)
-              @current = (x = opts.delete(:current); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Common::V0::Models::Price) ? x : ::Io::Flow::Common::V0::Models::Price.new(x)))
-              @msrp = (x = opts.delete(:msrp); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Common::V0::Models::Price) ? x : ::Io::Flow::Common::V0::Models::Price.new(x)))
-            end
-
-            def to_json
-              JSON.dump(to_hash)
-            end
-
-            def copy(incoming={})
-              Price.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
-            end
-
-            def to_hash
-              {
-                :current => current.nil? ? nil : current.to_hash,
-                :msrp => msrp.nil? ? nil : msrp.to_hash
-              }
-            end
-
-          end
-
           class View
 
-            attr_reader :id, :catalog, :key, :countries, :currency, :query, :settings
+            attr_reader :id, :catalog, :key, :countries, :currency, :settings, :query
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id, :catalog, :key, :countries, :currency, :query, :settings], 'View')
+              HttpClient::Preconditions.require_keys(opts, [:id, :catalog, :key, :countries, :currency, :settings], 'View')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @catalog = (x = opts.delete(:catalog); x.is_a?(::Io::Flow::Catalog::V0::Models::Catalog) ? x : ::Io::Flow::Catalog::V0::Models::Catalog.new(x))
               @key = HttpClient::Preconditions.assert_class('key', opts.delete(:key), String)
               @countries = HttpClient::Preconditions.assert_class('countries', opts.delete(:countries), Array).map { |v| HttpClient::Preconditions.assert_class('countries', v, String) }
               @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
-              @query = HttpClient::Preconditions.assert_class('query', opts.delete(:query), String)
               @settings = (x = opts.delete(:settings); x.is_a?(::Io::Flow::Catalog::V0::Models::ViewSettings) ? x : ::Io::Flow::Catalog::V0::Models::ViewSettings.new(x))
+              @query = (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String))
             end
 
             def to_json
@@ -1099,8 +743,8 @@ module Io
                 :key => key,
                 :countries => countries,
                 :currency => currency,
-                :query => query,
-                :settings => settings.to_hash
+                :settings => settings.to_hash,
+                :query => query
               }
             end
 
@@ -1108,16 +752,16 @@ module Io
 
           class ViewForm
 
-            attr_reader :key, :countries, :currency, :query, :settings
+            attr_reader :countries, :key, :currency, :query, :settings
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:key, :countries, :currency, :query, :settings], 'ViewForm')
-              @key = HttpClient::Preconditions.assert_class('key', opts.delete(:key), String)
+              HttpClient::Preconditions.require_keys(opts, [:countries], 'ViewForm')
               @countries = HttpClient::Preconditions.assert_class('countries', opts.delete(:countries), Array).map { |v| HttpClient::Preconditions.assert_class('countries', v, String) }
-              @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
-              @query = HttpClient::Preconditions.assert_class('query', opts.delete(:query), String)
-              @settings = (x = opts.delete(:settings); x.is_a?(::Io::Flow::Catalog::V0::Models::ViewSettingsForm) ? x : ::Io::Flow::Catalog::V0::Models::ViewSettingsForm.new(x))
+              @key = (x = opts.delete(:key); x.nil? ? nil : HttpClient::Preconditions.assert_class('key', x, String))
+              @currency = (x = opts.delete(:currency); x.nil? ? nil : HttpClient::Preconditions.assert_class('currency', x, String))
+              @query = (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String))
+              @settings = (x = opts.delete(:settings); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::ViewSettingsForm) ? x : ::Io::Flow::Catalog::V0::Models::ViewSettingsForm.new(x)))
             end
 
             def to_json
@@ -1130,25 +774,25 @@ module Io
 
             def to_hash
               {
-                :key => key,
                 :countries => countries,
+                :key => key,
                 :currency => currency,
                 :query => query,
-                :settings => settings.to_hash
+                :settings => settings.nil? ? nil : settings.to_hash
               }
             end
 
           end
 
+          # Placeholder for view_item resource.
           class ViewItem
 
-            attr_reader :id, :data
+            attr_reader :id
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id, :data], 'ViewItem')
+              HttpClient::Preconditions.require_keys(opts, [:id], 'ViewItem')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
-              @data = (x = opts.delete(:data); x.is_a?(::Io::Flow::Catalog::V0::Models::Item) ? x : ::Io::Flow::Catalog::V0::Models::Item.new(x))
             end
 
             def to_json
@@ -1161,8 +805,7 @@ module Io
 
             def to_hash
               {
-                :id => id,
-                :data => data.to_hash
+                :id => id
               }
             end
 
