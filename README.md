@@ -17,8 +17,8 @@ Native ruby client to the Flow API (https://api.flow.io)
 
     catalog = client.catalogs.get_catalog(org)
 
-    items = client.view_items.get(org, "canada", :limit => 10, :offset => 0)
-    puts "# items in view: %s" % items.size
+    items = client.subcatalog_items.get(org, "canada", :limit => 10, :offset => 0)
+    puts "# items in subcatalog: %s" % items.size
 
 
 ## Example

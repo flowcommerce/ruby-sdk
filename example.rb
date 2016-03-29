@@ -14,23 +14,23 @@ org = "chloe"
 
 client = FlowCommerce.client(token)
 
-view = client.views.get(org, :key => "canada").first
+subcatalog = client.subcatalogs.get(org, :key => "canada").first
 
-if view.nil?
-  form = Io::Flow::Catalog::V0::Models::ViewForm.new(
+if subcatalog.nil?
+  form = Io::Flow::Catalog::V0::Models::SubcatalogForm.new(
     :key => "canada",
     :countries => ["CA"],
     :currency => "CAD",
     :query => "Jewelry",
-    :settings => Io::Flow::Catalog::V0::Models::ViewSettingsForm.new()
+    :settings => Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm.new()
   )
-  view = client.views.post(org, form)
+  subcatalog = client.subcatalogs.post(org, form)
 end
 
 puts ""
-puts "Listing up to 10 items in the canada view"
+puts "Listing up to 10 items in the canada subcatalog"
 
-items = client.view_items.get(org, "canada", :limit => 10, :offset => 0)
+items = client.subcatalog_items.get(org, "canada", :limit => 10, :offset => 0)
 
 items.each_with_index do |item, i|
   puts "  %s. item %s: %s %s" % [i, item.number, item.price, item.currency]
@@ -40,7 +40,7 @@ end
 puts ""
 puts "Searching by specific item number"
 
-items = client.view_items.get(org, "canada", :number => ['R030G-8', 'R028CL-7'])
+items = client.subcatalog_items.get(org, "canada", :number => ['R030G-8', 'R028CL-7'])
 
 items.each_with_index do |item, i|
   puts "  %s. item %s: %s %s" % [i, item.number, item.price, item.currency]

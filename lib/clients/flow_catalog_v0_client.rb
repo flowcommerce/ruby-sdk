@@ -72,12 +72,12 @@ module Io
             @items ||= ::Io::Flow::Catalog::V0::Clients::Items.new(self)
           end
 
-          def views
-            @views ||= ::Io::Flow::Catalog::V0::Clients::Views.new(self)
+          def subcatalogs
+            @subcatalogs ||= ::Io::Flow::Catalog::V0::Clients::Subcatalogs.new(self)
           end
 
-          def view_items
-            @view_items ||= ::Io::Flow::Catalog::V0::Clients::ViewItems.new(self)
+          def subcatalog_items
+            @subcatalog_items ||= ::Io::Flow::Catalog::V0::Clients::SubcatalogItems.new(self)
           end
         end
 
@@ -183,7 +183,7 @@ module Io
 
           end
 
-          class Views
+          class Subcatalogs
 
             def initialize(client)
               @client = HttpClient::Preconditions.assert_class('client', client, ::Io::Flow::Catalog::V0::Client)
@@ -199,11 +199,11 @@ module Io
                 :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
                 :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "journal_timestamp" : x), String)
               }.delete_if { |k, v| v.nil? }
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/versions").with_query(query).get
-              r.map { |x| ::Io::Flow::Catalog::V0::Models::ViewVersion.new(x) }
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/versions").with_query(query).get
+              r.map { |x| ::Io::Flow::Catalog::V0::Models::SubcatalogVersion.new(x) }
             end
 
-            # Search views. Always paginated.
+            # Search subcatalogs. Always paginated.
             def get(organization, incoming={})
               HttpClient::Preconditions.assert_class('organization', organization, String)
               opts = HttpClient::Helper.symbolize_keys(incoming)
@@ -213,72 +213,72 @@ module Io
                 :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
                 :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "-created_at" : x), String)
               }.delete_if { |k, v| v.nil? }
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views").with_query(query).get
-              r.map { |x| ::Io::Flow::Catalog::V0::Models::View.new(x) }
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs").with_query(query).get
+              r.map { |x| ::Io::Flow::Catalog::V0::Models::Subcatalog.new(x) }
             end
 
-            # Returns information about a specific view.
+            # Returns information about a specific subcatalog.
             def get_by_id(organization, id)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(id)}").get
-              ::Io::Flow::Catalog::V0::Models::View.new(r)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}").get
+              ::Io::Flow::Catalog::V0::Models::Subcatalog.new(r)
             end
 
-            # Add view
-            def post(organization, view_form)
+            # Add subcatalog
+            def post(organization, subcatalog_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('view_form', view_form, ::Io::Flow::Catalog::V0::Models::ViewForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views").with_json(view_form.to_json).post
-              ::Io::Flow::Catalog::V0::Models::View.new(r)
+              HttpClient::Preconditions.assert_class('subcatalog_form', subcatalog_form, ::Io::Flow::Catalog::V0::Models::SubcatalogForm)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs").with_json(subcatalog_form.to_json).post
+              ::Io::Flow::Catalog::V0::Models::Subcatalog.new(r)
             end
 
-            # Update view with the specified id, creating if it does not exist.
-            def put_by_id(organization, id, view_form)
+            # Update subcatalog with the specified id, creating if it does not exist.
+            def put_by_id(organization, id, subcatalog_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('id', id, String)
-              HttpClient::Preconditions.assert_class('view_form', view_form, ::Io::Flow::Catalog::V0::Models::ViewForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(id)}").with_json(view_form.to_json).put
-              ::Io::Flow::Catalog::V0::Models::View.new(r)
+              HttpClient::Preconditions.assert_class('subcatalog_form', subcatalog_form, ::Io::Flow::Catalog::V0::Models::SubcatalogForm)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}").with_json(subcatalog_form.to_json).put
+              ::Io::Flow::Catalog::V0::Models::Subcatalog.new(r)
             end
 
-            # Delete the view with this id
+            # Delete the subcatalog with this id
             def delete_by_id(organization, id)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(id)}").delete
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}").delete
               nil
             end
 
-            # Returns information about a specific view's settings.
+            # Returns information about a specific subcatalog's settings.
             def get_settings_by_id(organization, id)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(id)}/settings").get
-              ::Io::Flow::Catalog::V0::Models::ViewSettings.new(r)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}/settings").get
+              ::Io::Flow::Catalog::V0::Models::SubcatalogSettings.new(r)
             end
 
-            # Update view settings for the specified view.
-            def put_settings_by_id(organization, id, view_settings_form)
+            # Update subcatalog settings for the specified subcatalog.
+            def put_settings_by_id(organization, id, subcatalog_settings_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('id', id, String)
-              HttpClient::Preconditions.assert_class('view_settings_form', view_settings_form, ::Io::Flow::Catalog::V0::Models::ViewSettingsForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(id)}/settings").with_json(view_settings_form.to_json).put
-              ::Io::Flow::Catalog::V0::Models::ViewSettings.new(r)
+              HttpClient::Preconditions.assert_class('subcatalog_settings_form', subcatalog_settings_form, ::Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}/settings").with_json(subcatalog_settings_form.to_json).put
+              ::Io::Flow::Catalog::V0::Models::SubcatalogSettings.new(r)
             end
 
           end
 
-          class ViewItems
+          class SubcatalogItems
 
             def initialize(client)
               @client = HttpClient::Preconditions.assert_class('client', client, ::Io::Flow::Catalog::V0::Client)
             end
 
             # Provides visibility into recent changes of each object, including deletion
-            def get_versions(organization, view, incoming={})
+            def get_versions(organization, subcatalog, incoming={})
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('view', view, String)
+              HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
               opts = HttpClient::Helper.symbolize_keys(incoming)
               query = {
                 :id => (x = opts.delete(:id); x.nil? ? nil : HttpClient::Preconditions.assert_class('id', x, Array).map { |v| HttpClient::Preconditions.assert_class('id', v, String) }),
@@ -287,14 +287,14 @@ module Io
                 :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
                 :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "journal_timestamp" : x), String)
               }.delete_if { |k, v| v.nil? }
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(view)}/items/versions").with_query(query).get
-              r.map { |x| ::Io::Flow::Catalog::V0::Models::ViewVersion.new(x) }
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/versions").with_query(query).get
+              r.map { |x| ::Io::Flow::Catalog::V0::Models::SubcatalogVersion.new(x) }
             end
 
-            # Search view items. Always paginated.
-            def get(organization, view, incoming={})
+            # Search subcatalog items. Always paginated.
+            def get(organization, subcatalog, incoming={})
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('view', view, String)
+              HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
               opts = HttpClient::Helper.symbolize_keys(incoming)
               query = {
                 :id => (x = opts.delete(:id); x.nil? ? nil : HttpClient::Preconditions.assert_class('id', x, Array).map { |v| HttpClient::Preconditions.assert_class('id', v, String) }),
@@ -304,44 +304,44 @@ module Io
                 :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
                 :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "lower(name)" : x), String)
               }.delete_if { |k, v| v.nil? }
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(view)}/items").with_query(query).get
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items").with_query(query).get
               r.map { |x| ::Io::Flow::Catalog::V0::Models::Item.new(x) }
             end
 
-            # Returns information about specific view items.
-            def get_by_id(organization, view, id)
+            # Returns information about specific subcatalog items.
+            def get_by_id(organization, subcatalog, id)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('view', view, String)
+              HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
               HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(view)}/items/#{CGI.escape(id)}").get
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(id)}").get
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
-            # Add view item
-            def post(organization, view, item_form)
+            # Add subcatalog item
+            def post(organization, subcatalog, item_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('view', view, String)
+              HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
               HttpClient::Preconditions.assert_class('item_form', item_form, ::Io::Flow::Catalog::V0::Models::ItemForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(view)}/items").with_json(item_form.to_json).post
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items").with_json(item_form.to_json).post
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
-            # Update view item with the specified id, creating if it does not exist.
-            def put_by_id(organization, view, id, item_form)
+            # Update subcatalog item with the specified id, creating if it does not exist.
+            def put_by_id(organization, subcatalog, id, item_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('view', view, String)
+              HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
               HttpClient::Preconditions.assert_class('id', id, String)
               HttpClient::Preconditions.assert_class('item_form', item_form, ::Io::Flow::Catalog::V0::Models::ItemForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(view)}/items/#{CGI.escape(id)}").with_json(item_form.to_json).put
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(id)}").with_json(item_form.to_json).put
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
-            # Delete the view item with this id
-            def delete_by_id(organization, view, id)
+            # Delete the subcatalog item with this id
+            def delete_by_id(organization, subcatalog, id)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('view', view, String)
+              HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
               HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/views/#{CGI.escape(view)}/items/#{CGI.escape(id)}").delete
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(id)}").delete
               nil
             end
 
@@ -712,19 +712,19 @@ module Io
 
           end
 
-          class View
+          class Subcatalog
 
             attr_reader :id, :catalog, :key, :countries, :currency, :settings, :query
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id, :catalog, :key, :countries, :currency, :settings], 'View')
+              HttpClient::Preconditions.require_keys(opts, [:id, :catalog, :key, :countries, :currency, :settings], 'Subcatalog')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @catalog = (x = opts.delete(:catalog); x.is_a?(::Io::Flow::Catalog::V0::Models::Catalog) ? x : ::Io::Flow::Catalog::V0::Models::Catalog.new(x))
               @key = HttpClient::Preconditions.assert_class('key', opts.delete(:key), String)
               @countries = HttpClient::Preconditions.assert_class('countries', opts.delete(:countries), Array).map { |v| HttpClient::Preconditions.assert_class('countries', v, String) }
               @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
-              @settings = (x = opts.delete(:settings); x.is_a?(::Io::Flow::Catalog::V0::Models::ViewSettings) ? x : ::Io::Flow::Catalog::V0::Models::ViewSettings.new(x))
+              @settings = (x = opts.delete(:settings); x.is_a?(::Io::Flow::Catalog::V0::Models::SubcatalogSettings) ? x : ::Io::Flow::Catalog::V0::Models::SubcatalogSettings.new(x))
               @query = (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String))
             end
 
@@ -733,7 +733,7 @@ module Io
             end
 
             def copy(incoming={})
-              View.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+              Subcatalog.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
             end
 
             def to_hash
@@ -750,18 +750,18 @@ module Io
 
           end
 
-          class ViewForm
+          class SubcatalogForm
 
             attr_reader :countries, :key, :currency, :query, :settings
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:countries], 'ViewForm')
+              HttpClient::Preconditions.require_keys(opts, [:countries], 'SubcatalogForm')
               @countries = HttpClient::Preconditions.assert_class('countries', opts.delete(:countries), Array).map { |v| HttpClient::Preconditions.assert_class('countries', v, String) }
               @key = (x = opts.delete(:key); x.nil? ? nil : HttpClient::Preconditions.assert_class('key', x, String))
               @currency = (x = opts.delete(:currency); x.nil? ? nil : HttpClient::Preconditions.assert_class('currency', x, String))
               @query = (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String))
-              @settings = (x = opts.delete(:settings); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::ViewSettingsForm) ? x : ::Io::Flow::Catalog::V0::Models::ViewSettingsForm.new(x)))
+              @settings = (x = opts.delete(:settings); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm) ? x : ::Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm.new(x)))
             end
 
             def to_json
@@ -769,7 +769,7 @@ module Io
             end
 
             def copy(incoming={})
-              ViewForm.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+              SubcatalogForm.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
             end
 
             def to_hash
@@ -784,14 +784,14 @@ module Io
 
           end
 
-          # Placeholder for view_item resource.
-          class ViewItem
+          # Placeholder for subcatalog_item resource.
+          class SubcatalogItem
 
             attr_reader :id
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id], 'ViewItem')
+              HttpClient::Preconditions.require_keys(opts, [:id], 'SubcatalogItem')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
             end
 
@@ -800,7 +800,7 @@ module Io
             end
 
             def copy(incoming={})
-              ViewItem.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+              SubcatalogItem.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
             end
 
             def to_hash
@@ -811,7 +811,7 @@ module Io
 
           end
 
-          class ViewSettings
+          class SubcatalogSettings
 
             attr_reader :update_policy
 
@@ -825,7 +825,7 @@ module Io
             end
 
             def copy(incoming={})
-              ViewSettings.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+              SubcatalogSettings.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
             end
 
             def to_hash
@@ -836,7 +836,7 @@ module Io
 
           end
 
-          class ViewSettingsForm
+          class SubcatalogSettingsForm
 
             attr_reader :update_policy
 
@@ -850,7 +850,7 @@ module Io
             end
 
             def copy(incoming={})
-              ViewSettingsForm.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+              SubcatalogSettingsForm.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
             end
 
             def to_hash
@@ -861,17 +861,17 @@ module Io
 
           end
 
-          class ViewVersion
+          class SubcatalogVersion
 
-            attr_reader :id, :timestamp, :type, :view
+            attr_reader :id, :timestamp, :type, :subcatalog
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id, :timestamp, :type, :view], 'ViewVersion')
+              HttpClient::Preconditions.require_keys(opts, [:id, :timestamp, :type, :subcatalog], 'SubcatalogVersion')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @timestamp = HttpClient::Preconditions.assert_class('timestamp', HttpClient::Helper.to_date_time_iso8601(opts.delete(:timestamp)), DateTime)
               @type = (x = opts.delete(:type); x.is_a?(::Io::Flow::Common::V0::Models::ChangeType) ? x : ::Io::Flow::Common::V0::Models::ChangeType.apply(x))
-              @view = (x = opts.delete(:view); x.is_a?(::Io::Flow::Catalog::V0::Models::View) ? x : ::Io::Flow::Catalog::V0::Models::View.new(x))
+              @subcatalog = (x = opts.delete(:subcatalog); x.is_a?(::Io::Flow::Catalog::V0::Models::Subcatalog) ? x : ::Io::Flow::Catalog::V0::Models::Subcatalog.new(x))
             end
 
             def to_json
@@ -879,7 +879,7 @@ module Io
             end
 
             def copy(incoming={})
-              ViewVersion.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+              SubcatalogVersion.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
             end
 
             def to_hash
@@ -887,7 +887,7 @@ module Io
                 :id => id,
                 :timestamp => timestamp,
                 :type => type.value,
-                :view => view.to_hash
+                :subcatalog => subcatalog.to_hash
               }
             end
 
