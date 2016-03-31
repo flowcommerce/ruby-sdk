@@ -361,6 +361,58 @@ module Io
 
         module Models
 
+          class ExpandableSubcatalog
+
+            module Types
+              SUBCATALOG = 'subcatalog' unless defined?(SUBCATALOG)
+              SUBCATALOG_REFERENCE = 'subcatalog_reference' unless defined?(SUBCATALOG_REFERENCE)
+            end
+
+            def initialize(incoming={})
+              opts = HttpClient::Helper.symbolize_keys(incoming)
+              HttpClient::Preconditions.require_keys(opts, [:name], 'ExpandableSubcatalog')
+              @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
+            end
+
+            def to_hash
+              subtype_to_hash.merge(:discriminator => @name)
+            end
+
+            def ExpandableSubcatalog.from_json(hash)
+              HttpClient::Preconditions.assert_class('hash', hash, Hash)
+              case HttpClient::Helper.symbolize_keys(hash)[:discriminator]
+                when Types::SUBCATALOG; Subcatalog.new(hash)
+                when Types::SUBCATALOG_REFERENCE; SubcatalogReference.new(hash)
+                else ExpandableSubcatalogUndefinedType.new(:name => union_type_name)
+              end
+            end
+
+          end
+
+          class ExpandableSubcatalogUndefinedType < ExpandableSubcatalog
+
+            attr_reader :name
+
+            def initialize(incoming={})
+              super(:name => 'undefined_type')
+              opts = HttpClient::Helper.symbolize_keys(incoming)
+              @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
+            end
+
+            def subtype_to_hash
+              raise 'Unable to serialize undefined type to json'
+            end
+
+            def copy(incoming={})
+              raise 'Operation not supported for undefined type'
+            end
+
+            def to_hash
+              raise 'Operation not supported for undefined type'
+            end
+
+          end
+
           class DimensionType
 
             attr_reader :value
@@ -602,22 +654,23 @@ module Io
 
           class Item
 
-            attr_reader :id, :number, :currency, :locale, :name, :price, :categories, :description, :dimensions, :images, :attributes
+            attr_reader :id, :number, :locale, :name, :currency, :price, :categories, :description, :dimensions, :images, :attributes, :local
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id, :number, :currency, :locale, :name, :price], 'Item')
+              HttpClient::Preconditions.require_keys(opts, [:id, :number, :locale, :name, :currency, :price], 'Item')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @number = HttpClient::Preconditions.assert_class('number', opts.delete(:number), String)
-              @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
               @locale = HttpClient::Preconditions.assert_class('locale', opts.delete(:locale), String)
               @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
-              @price = HttpClient::Preconditions.assert_class('price', opts.delete(:price), Numeric)
+              @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
+              @price = (x = opts.delete(:price); x.is_a?(::Io::Flow::Catalog::V0::Models::Price) ? x : ::Io::Flow::Catalog::V0::Models::Price.new(x))
               @categories = HttpClient::Preconditions.assert_class('categories', (x = opts.delete(:categories); x.nil? ? [] : x), Array).map { |v| HttpClient::Preconditions.assert_class('categories', v, String) }
               @description = (x = opts.delete(:description); x.nil? ? nil : HttpClient::Preconditions.assert_class('description', x, String))
               @dimensions = HttpClient::Preconditions.assert_class('dimensions', (x = opts.delete(:dimensions); x.nil? ? [] : x), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Dimension) ? x : ::Io::Flow::Catalog::V0::Models::Dimension.new(x)) }
               @images = HttpClient::Preconditions.assert_class('images', (x = opts.delete(:images); x.nil? ? [] : x), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Image) ? x : ::Io::Flow::Catalog::V0::Models::Image.new(x)) }
               @attributes = HttpClient::Preconditions.assert_class('attributes', (x = opts.delete(:attributes); x.nil? ? [] : x), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::Attribute) ? x : ::Io::Flow::Catalog::V0::Models::Attribute.new(x)) }
+              @local = (x = opts.delete(:local); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::Local) ? x : ::Io::Flow::Catalog::V0::Models::Local.new(x)))
             end
 
             def to_json
@@ -632,15 +685,16 @@ module Io
               {
                 :id => id,
                 :number => number,
-                :currency => currency,
                 :locale => locale,
                 :name => name,
-                :price => price,
+                :currency => currency,
+                :price => price.to_hash,
                 :categories => categories,
                 :description => description,
                 :dimensions => dimensions.map { |o| o.to_hash },
                 :images => images.map { |o| o.to_hash },
-                :attributes => attributes.map { |o| o.to_hash }
+                :attributes => attributes.map { |o| o.to_hash },
+                :local => local.nil? ? nil : local.to_hash
               }
             end
 
@@ -648,15 +702,15 @@ module Io
 
           class ItemForm
 
-            attr_reader :number, :currency, :locale, :name, :price, :categories, :description, :dimensions, :images, :attributes
+            attr_reader :number, :locale, :name, :currency, :price, :categories, :description, :dimensions, :images, :attributes
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:number, :currency, :locale, :name, :price], 'ItemForm')
+              HttpClient::Preconditions.require_keys(opts, [:number, :locale, :name, :currency, :price], 'ItemForm')
               @number = HttpClient::Preconditions.assert_class('number', opts.delete(:number), String)
-              @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
               @locale = HttpClient::Preconditions.assert_class('locale', opts.delete(:locale), String)
               @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
+              @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
               @price = HttpClient::Preconditions.assert_class('price', opts.delete(:price), Numeric)
               @categories = (x = opts.delete(:categories); x.nil? ? nil : HttpClient::Preconditions.assert_class('categories', x, Array).map { |v| HttpClient::Preconditions.assert_class('categories', v, String) })
               @description = (x = opts.delete(:description); x.nil? ? nil : HttpClient::Preconditions.assert_class('description', x, String))
@@ -676,9 +730,9 @@ module Io
             def to_hash
               {
                 :number => number,
-                :currency => currency,
                 :locale => locale,
                 :name => name,
+                :currency => currency,
                 :price => price,
                 :categories => categories.nil? ? nil : categories,
                 :description => description,
@@ -722,18 +776,101 @@ module Io
 
           end
 
-          class Subcatalog
+          class Local
 
-            attr_reader :id, :catalog, :key, :countries, :currency, :settings, :query
+            attr_reader :prices
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:id, :catalog, :key, :countries, :currency, :settings], 'Subcatalog')
+              HttpClient::Preconditions.require_keys(opts, [:prices], 'Local')
+              @prices = HttpClient::Preconditions.assert_class('prices', opts.delete(:prices), Array).map { |v| (x = v; x.is_a?(::Io::Flow::Catalog::V0::Models::LocalizedPrice) ? x : ::Io::Flow::Catalog::V0::Models::LocalizedPrice.new(x)) }
+            end
+
+            def to_json
+              JSON.dump(to_hash)
+            end
+
+            def copy(incoming={})
+              Local.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+            end
+
+            def to_hash
+              {
+                :prices => prices.map { |o| o.to_hash }
+              }
+            end
+
+          end
+
+          class LocalizedPrice
+
+            attr_reader :key, :amount, :label
+
+            def initialize(incoming={})
+              opts = HttpClient::Helper.symbolize_keys(incoming)
+              HttpClient::Preconditions.require_keys(opts, [:key, :amount, :label], 'LocalizedPrice')
+              @key = HttpClient::Preconditions.assert_class('key', opts.delete(:key), String)
+              @amount = HttpClient::Preconditions.assert_class('amount', opts.delete(:amount), Numeric)
+              @label = HttpClient::Preconditions.assert_class('label', opts.delete(:label), String)
+            end
+
+            def to_json
+              JSON.dump(to_hash)
+            end
+
+            def copy(incoming={})
+              LocalizedPrice.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+            end
+
+            def to_hash
+              {
+                :key => key,
+                :amount => amount,
+                :label => label
+              }
+            end
+
+          end
+
+          class Price
+
+            attr_reader :amount, :label
+
+            def initialize(incoming={})
+              opts = HttpClient::Helper.symbolize_keys(incoming)
+              HttpClient::Preconditions.require_keys(opts, [:amount, :label], 'Price')
+              @amount = HttpClient::Preconditions.assert_class('amount', opts.delete(:amount), Numeric)
+              @label = HttpClient::Preconditions.assert_class('label', opts.delete(:label), String)
+            end
+
+            def to_json
+              JSON.dump(to_hash)
+            end
+
+            def copy(incoming={})
+              Price.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+            end
+
+            def to_hash
+              {
+                :amount => amount,
+                :label => label
+              }
+            end
+
+          end
+
+          class Subcatalog < ExpandableSubcatalog
+
+            attr_reader :id, :catalog, :key, :settings, :query
+
+            def initialize(incoming={})
+              super(:name => ExpandableSubcatalog::Types::SUBCATALOG)
+              opts = HttpClient::Helper.symbolize_keys(incoming)
+              HttpClient::Preconditions.require_keys(opts, [:id, :catalog, :key, :settings], 'Subcatalog')
               @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
               @catalog = (x = opts.delete(:catalog); x.is_a?(::Io::Flow::Catalog::V0::Models::Catalog) ? x : ::Io::Flow::Catalog::V0::Models::Catalog.new(x))
               @key = HttpClient::Preconditions.assert_class('key', opts.delete(:key), String)
-              @countries = HttpClient::Preconditions.assert_class('countries', opts.delete(:countries), Array).map { |v| HttpClient::Preconditions.assert_class('countries', v, String) }
-              @currency = HttpClient::Preconditions.assert_class('currency', opts.delete(:currency), String)
               @settings = (x = opts.delete(:settings); x.is_a?(::Io::Flow::Catalog::V0::Models::SubcatalogSettings) ? x : ::Io::Flow::Catalog::V0::Models::SubcatalogSettings.new(x))
               @query = (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String))
             end
@@ -743,16 +880,14 @@ module Io
             end
 
             def copy(incoming={})
-              Subcatalog.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+              Subcatalog.new(subtype_to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
             end
 
-            def to_hash
+            def subtype_to_hash
               {
                 :id => id,
                 :catalog => catalog.to_hash,
                 :key => key,
-                :countries => countries,
-                :currency => currency,
                 :settings => settings.to_hash,
                 :query => query
               }
@@ -762,14 +897,11 @@ module Io
 
           class SubcatalogForm
 
-            attr_reader :countries, :key, :currency, :query, :settings
+            attr_reader :key, :query, :settings
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
-              HttpClient::Preconditions.require_keys(opts, [:countries], 'SubcatalogForm')
-              @countries = HttpClient::Preconditions.assert_class('countries', opts.delete(:countries), Array).map { |v| HttpClient::Preconditions.assert_class('countries', v, String) }
               @key = (x = opts.delete(:key); x.nil? ? nil : HttpClient::Preconditions.assert_class('key', x, String))
-              @currency = (x = opts.delete(:currency); x.nil? ? nil : HttpClient::Preconditions.assert_class('currency', x, String))
               @query = (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String))
               @settings = (x = opts.delete(:settings); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm) ? x : ::Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm.new(x)))
             end
@@ -784,9 +916,7 @@ module Io
 
             def to_hash
               {
-                :countries => countries,
                 :key => key,
-                :currency => currency,
                 :query => query,
                 :settings => settings.nil? ? nil : settings.to_hash
               }
@@ -794,7 +924,6 @@ module Io
 
           end
 
-          # Placeholder for subcatalog_item resource.
           class SubcatalogItem
 
             attr_reader :id
@@ -814,6 +943,33 @@ module Io
             end
 
             def to_hash
+              {
+                :id => id
+              }
+            end
+
+          end
+
+          class SubcatalogReference < ExpandableSubcatalog
+
+            attr_reader :id
+
+            def initialize(incoming={})
+              super(:name => ExpandableSubcatalog::Types::SUBCATALOG_REFERENCE)
+              opts = HttpClient::Helper.symbolize_keys(incoming)
+              HttpClient::Preconditions.require_keys(opts, [:id], 'SubcatalogReference')
+              @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
+            end
+
+            def to_json
+              JSON.dump(to_hash)
+            end
+
+            def copy(incoming={})
+              SubcatalogReference.new(subtype_to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+            end
+
+            def subtype_to_hash
               {
                 :id => id
               }
