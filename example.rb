@@ -1,60 +1,53 @@
 #!/usr/bin/env ruby
 
 #require 'flowcommerce'
-
 load 'lib/flowcommerce.rb'
+load 'examples/util.rb'
 
-token_file = "~/.flow/token"
+puts ""
+puts "Welcome to Flow Commerce"
+puts "---------------------------------------------------------------------------------"
+puts "We hope these examples are helpful! We're always open to suggestions and comments"
+puts "Pls feel free to:"
+puts "  - open PRs or log issues in github https://github.com/flowcommerce/ruby-sdk"
+puts "  - email us at tech@flow.io"
+puts ""
+puts "Thanks and enjoy!"
+puts ""
 
-if !File.exists?(File.expand_path(token_file))
-  puts "ERROR: Pls create a file named %s containing your Flow API token" % token_file
-  exit(1)
-end
+client = begin
+           FlowCommerce.instance
+         rescue Exception => e
+           puts ""
+           puts "*** ERROR No API Token Found ***"
+           puts e.to_s
+           puts ""
+           puts "  To use the examples, you must provide your Flow API Token in one of the following ways:"
+           puts "    1. create a file at %s containing your token" % FlowCommerce::DEFAULT_TOKEN_FILE_LOCATION
+           puts "    2. pass your token in via env var: FLOW_TOKEN=xxx ./example.rb"
+           puts "    3. place your token in a file and pass in the location: FLOW_TOKEN_FILE=/xxx/yyy/token.txt ./example.rb"
+           puts ""
+           exit(1)
+         end
 
 org = ARGV.shift.to_s.strip
 if org == ""
-  puts "ERROR: Pls specify your organization"
-  exit(1)
+  org = Util::Ask.for_string("Pls enter your organization ID (note you can also pass in directly to this script): ")
 end
 
-token = IO.read(File.expand_path(token_file)).strip
-
-if token == ""
-  puts "ERROR: API Token not found. Expected in file %s" % token_file
-  exit(1)
+Util.display_menu
+selection = nil
+while selection.nil?
+  value = Util::Ask.for_positive_integer("Select example to run:")
+  selection = Util::MENU[value - 1]
 end
 
-client = FlowCommerce.client(token)
+puts ""
+puts "Running example: %s" % selection.title
+puts ""
 
-def pick_n(n, items)
-  items.shuffle.first(2)
-end
-
-def create_items(client, org, number_items=10)
-
-  currencies = ["USD", "CAD", "AUD", "GBP"]
-
-  number_items.times do |i|
-    number = "sku-" + Time.now.strftime("%Y%m") + "-" + rand(10000).to_s
-    puts " - creating item %s/%s" % [org, number]
-    
-    client.items.put_by_id(org,
-                           number,
-                           ::Io::Flow::Catalog::V0::Models::ItemForm.new(
-                             :number => number,
-                             :locale => "en_US",
-                             :name => "Flow Test Item #{number}",
-                             :currency => currencies.shuffle.first,
-                             :price => 100 + rand(120),
-                             :categories => pick_n(2, ["Apparel", "Accessories", "Mens", "Womens", "Belts", "Special"]),
-                           )
-                        )
-  end
-
-  exit(1)
-end
-
-create_items(client, org, 175)
+selection.run(client, org)
+exit(1)
 
 def each_record(f, limit=100, offset=0, &block)
   records = f.call(limit + 1, offset)
@@ -81,21 +74,7 @@ end
 
 exit(1)
 
-def delete_all_items
-  while true
-    puts "Fetching 100 items from master catalog"
-    items = client.items.get(org, :limit => 100)
-    items.each do |item|
-      puts " - Deleting %s/%s" % [org, item.number]
-      client.items.delete_by_id(org, item.number)
-    end
 
-    if items.empty?
-      break
-    end
-  end
-  exit(1)
-end
 
 subcatalog = client.subcatalogs.get(org, :key => ["canada"]).first
 
