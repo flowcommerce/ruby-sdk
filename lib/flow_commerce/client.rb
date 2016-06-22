@@ -9,7 +9,9 @@ module FlowCommerce
   #  2. an environment variable named FLOW_TOKEN_FILE containing
   #     the path of the file with the token in it
   #
-  def FlowCommerce.instance
+  # @param module e.g. catalog, experience - this is temporary
+  #        until Flow consolidates its APIs into a single domain
+  def FlowCommerce.instance(app)
     token = ENV['FLOW_TOKEN'].to_s.strip
 
     if token.empty?
@@ -29,10 +31,17 @@ module FlowCommerce
       end
     end
 
-    FlowCommerce.client(token)
+    case app
+    when "catalog"
+      FlowCommerce.catalog_client(token, opts = {})
+    when "experience"
+      FlowCommerce.experience_client(token, opts = {})
+    else
+      raise "Invalid module name[%s]" % app
+    end
   end
   
-  def FlowCommerce.client(token, opts = {})
+  def FlowCommerce.catalog_client(token, opts = {})
     if token.empty?
       raise "ERROR: Token is required"
     end
@@ -44,6 +53,21 @@ module FlowCommerce
       Io::Flow::Catalog::V0::Client.at_base_url(:authorization => auth)
     else
       Io::Flow::Catalog::V0::Client.new(base_url, :authorization => auth)
+    end
+  end
+
+  def FlowCommerce.experience_client(token, opts = {})
+    if token.empty?
+      raise "ERROR: Token is required"
+    end
+
+    base_url = opts[:base_url].to_s.strip
+    auth = Io::Flow::Experience::V0::HttpClient::Authorization.basic(token)
+
+    if base_url.empty?
+      Io::Flow::Experience::V0::Client.at_base_url(:authorization => auth)
+    else
+      Io::Flow::Experience::V0::Client.new(base_url, :authorization => auth)
     end
   end
 

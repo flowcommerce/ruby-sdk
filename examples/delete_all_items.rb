@@ -7,7 +7,7 @@ module DeleteAllItems
       items = client.items.get(org, :limit => 100)
       items.each do |item|
         puts " - Deleting %s/%s" % [org, item.number]
-        client.items.delete_by_id(org, item.number)
+        client.items.delete_by_number(org, item.number)
         num_deleted += 1
       end
 

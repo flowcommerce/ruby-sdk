@@ -211,10 +211,10 @@ module Io
             end
 
             # Returns information about a specific item.
-            def get_by_id(organization, id)
+            def get_by_number(organization, number)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/items/#{CGI.escape(id)}").get
+              HttpClient::Preconditions.assert_class('number', number, String)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/items/#{CGI.escape(number)}").get
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
@@ -226,20 +226,20 @@ module Io
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
-            # Update item with the specified id, creating if it does not exist.
-            def put_by_id(organization, id, item_form)
+            # Update item with the specified number, creating if it does not exist.
+            def put_by_number(organization, number, item_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
+              HttpClient::Preconditions.assert_class('number', number, String)
               HttpClient::Preconditions.assert_class('item_form', item_form, ::Io::Flow::Catalog::V0::Models::ItemForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/items/#{CGI.escape(id)}").with_json(item_form.to_json).put
+              r = @client.request("/#{CGI.escape(organization)}/catalog/items/#{CGI.escape(number)}").with_json(item_form.to_json).put
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
-            # Delete the item with this id
-            def delete_by_id(organization, id)
+            # Delete the item with this number
+            def delete_by_number(organization, number)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/items/#{CGI.escape(id)}").delete
+              HttpClient::Preconditions.assert_class('number', number, String)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/items/#{CGI.escape(number)}").delete
               nil
             end
 
@@ -282,10 +282,10 @@ module Io
             end
 
             # Returns information about a specific subcatalog.
-            def get_by_id(organization, id)
+            def get_by_key(organization, key)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}").get
+              HttpClient::Preconditions.assert_class('key', key, String)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(key)}").get
               ::Io::Flow::Catalog::V0::Models::Subcatalog.new(r)
             end
 
@@ -297,47 +297,47 @@ module Io
               ::Io::Flow::Catalog::V0::Models::Subcatalog.new(r)
             end
 
-            # Update subcatalog with the specified id, creating if it does not exist.
-            def put_by_id(organization, id, subcatalog_form)
+            # Update subcatalog with the specified key, creating if it does not exist.
+            def put_by_key(organization, key, subcatalog_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
+              HttpClient::Preconditions.assert_class('key', key, String)
               HttpClient::Preconditions.assert_class('subcatalog_form', subcatalog_form, ::Io::Flow::Catalog::V0::Models::SubcatalogForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}").with_json(subcatalog_form.to_json).put
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(key)}").with_json(subcatalog_form.to_json).put
               ::Io::Flow::Catalog::V0::Models::Subcatalog.new(r)
             end
 
-            # Delete the subcatalog with this id
-            def delete_by_id(organization, id)
+            # Delete the subcatalog with this key
+            def delete_by_key(organization, key)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}").delete
+              HttpClient::Preconditions.assert_class('key', key, String)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(key)}").delete
               nil
             end
 
             # Returns information about a specific subcatalog's settings.
-            def get_settings_by_id(organization, id)
+            def get_settings_by_key(organization, key)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}/settings").get
+              HttpClient::Preconditions.assert_class('key', key, String)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(key)}/settings").get
               ::Io::Flow::Catalog::V0::Models::SubcatalogSettings.new(r)
             end
 
             # Update subcatalog settings for the specified subcatalog.
-            def put_settings_by_id(organization, id, subcatalog_settings_form)
+            def put_settings_by_key(organization, key, subcatalog_settings_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
+              HttpClient::Preconditions.assert_class('key', key, String)
               HttpClient::Preconditions.assert_class('subcatalog_settings_form', subcatalog_settings_form, ::Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}/settings").with_json(subcatalog_settings_form.to_json).put
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(key)}/settings").with_json(subcatalog_settings_form.to_json).put
               ::Io::Flow::Catalog::V0::Models::SubcatalogSettings.new(r)
             end
 
             # Sync subcatalog
-            def post_events_by_id_and_event(organization, id, event, hash)
+            def post_events_by_key_and_event(organization, key, event, hash)
               HttpClient::Preconditions.assert_class('organization', organization, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
+              HttpClient::Preconditions.assert_class('key', key, String)
               HttpClient::Preconditions.assert_class('event', event, String)
               HttpClient::Preconditions.assert_class('hash', hash, Hash)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}/events/#{CGI.escape(event)}").with_json(hash.to_json).post
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(key)}/events/#{CGI.escape(event)}").with_json(hash.to_json).post
               nil
             end
 
@@ -383,11 +383,11 @@ module Io
             end
 
             # Returns information about specific subcatalog items.
-            def get_by_id(organization, subcatalog, id)
+            def get_by_number(organization, subcatalog, number)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(id)}").get
+              HttpClient::Preconditions.assert_class('number', number, String)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(number)}").get
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
@@ -400,22 +400,23 @@ module Io
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
-            # Update subcatalog item with the specified id, creating if it does not exist.
-            def put_by_id(organization, subcatalog, id, item_form)
+            # Update subcatalog item with the specified number, creating if it does not
+            # exist.
+            def put_by_number(organization, subcatalog, number, item_form)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
+              HttpClient::Preconditions.assert_class('number', number, String)
               HttpClient::Preconditions.assert_class('item_form', item_form, ::Io::Flow::Catalog::V0::Models::ItemForm)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(id)}").with_json(item_form.to_json).put
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(number)}").with_json(item_form.to_json).put
               ::Io::Flow::Catalog::V0::Models::Item.new(r)
             end
 
-            # Delete the subcatalog item with this id
-            def delete_by_id(organization, subcatalog, id)
+            # Delete the subcatalog item with this number
+            def delete_by_number(organization, subcatalog, number)
               HttpClient::Preconditions.assert_class('organization', organization, String)
               HttpClient::Preconditions.assert_class('subcatalog', subcatalog, String)
-              HttpClient::Preconditions.assert_class('id', id, String)
-              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(id)}").delete
+              HttpClient::Preconditions.assert_class('number', number, String)
+              r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog)}/items/#{CGI.escape(number)}").delete
               nil
             end
 
@@ -1365,12 +1366,13 @@ module Io
 
           class SubcatalogForm
 
-            attr_reader :key, :country, :query, :settings
+            attr_reader :country, :key, :query, :settings
 
             def initialize(incoming={})
               opts = HttpClient::Helper.symbolize_keys(incoming)
+              HttpClient::Preconditions.require_keys(opts, [:country], 'SubcatalogForm')
+              @country = HttpClient::Preconditions.assert_class('country', opts.delete(:country), String)
               @key = (x = opts.delete(:key); x.nil? ? nil : HttpClient::Preconditions.assert_class('key', x, String))
-              @country = (x = opts.delete(:country); x.nil? ? nil : HttpClient::Preconditions.assert_class('country', x, String))
               @query = (x = opts.delete(:query); x.nil? ? nil : HttpClient::Preconditions.assert_class('query', x, String))
               @settings = (x = opts.delete(:settings); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm) ? x : ::Io::Flow::Catalog::V0::Models::SubcatalogSettingsForm.new(x)))
             end
@@ -1385,8 +1387,8 @@ module Io
 
             def to_hash
               {
-                :key => key,
                 :country => country,
+                :key => key,
                 :query => query,
                 :settings => settings.nil? ? nil : settings.to_hash
               }

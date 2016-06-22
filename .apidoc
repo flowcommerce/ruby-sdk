@@ -8,3 +8,7 @@ code:
       version: latest
       generators:
         ruby_client: lib/clients
+    experience:
+      version: latest
+      generators:
+        ruby_client: lib/clients

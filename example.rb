@@ -15,8 +15,11 @@ puts ""
 puts "Thanks and enjoy!"
 puts ""
 
-client = begin
-           FlowCommerce.instance
+clients = begin
+            {
+              :catalog => FlowCommerce.instance("catalog"),
+              :experience => FlowCommerce.instance("experience")
+            }
          rescue Exception => e
            puts ""
            puts "*** ERROR No API Token Found ***"
@@ -46,45 +49,9 @@ puts ""
 puts "Running example: %s" % selection.title
 puts ""
 
-selection.run(client, org)
-exit(1)
-
-def each_record(f, limit=100, offset=0, &block)
-  records = f.call(limit + 1, offset)
-  have_more = records.size > limit
-
-  records[0...-1].each do |rec|
-    yield rec
-  end
-
-  if !records.empty?
-    each_record(f, limit, offset += limit, &block)
-  end
-end
-
-def display_items(client)
-  numbers = []
-  each_record( Proc.new do |limit, offset|
-                 client.items.get(org, :limit => limit, :offset => offset)
-               end
-             ) do |rec|
-    numbers << rec.number
-  end
-end
+selection.run(clients, org)
 
 exit(1)
-
-
-
-subcatalog = client.subcatalogs.get(org, :key => ["canada"]).first
-
-if subcatalog.nil?
-  form = Io::Flow::Catalog::V0::Models::SubcatalogForm.new(:country => "canada")
-  subcatalog = client.subcatalogs.post(org, form)
-end
-
-puts ""
-puts "Listing up to 10 items in the canada subcatalog"
 
 items = client.subcatalog_items.get(org, "canada", :limit => 10, :offset => 0)
 
