@@ -21,7 +21,8 @@ module Util
     Util::MenuItem.new("Catalog: Create items", "examples/create_items.rb", Proc.new { |clients, org| CreateItems.run(clients[:catalog], org) }),
     Util::MenuItem.new("Catalog: Delete all items", "examples/delete_all_items.rb", Proc.new { |clients, org| DeleteAllItems.run(clients[:catalog], org) }),
     Util::MenuItem.new("Experiences: Show all", "examples/show_experiences.rb", Proc.new { |clients, org| ShowExperiences.run(clients[:experience], org) }),
-    Util::MenuItem.new("Experiences: Create", "examples/create_experience.rb", Proc.new { |clients, org| CreateExperience.run(clients[:experience], org) }),
+    Util::MenuItem.new("Experiences: Create", "examples/create_experience.rb", Proc.new { |clients, org| CreateExperience.run(clients[:catalog], clients[:experience], org) }),
+    Util::MenuItem.new("Experiences: Delete All", "examples/delete_all_experiences.rb", Proc.new { |clients, org| DeleteAllExperiences.run(clients[:experience], org) }),
     Util::MenuItem.new("Experience Items: Show", "examples/show_experience_items.rb", Proc.new { |clients, org| ShowExperienceItems.run(clients[:experience], org) })
   ]
 
