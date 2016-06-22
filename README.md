@@ -2,40 +2,34 @@
 
 Native ruby client to the Flow API (https://api.flow.io)
 
+## Status
+
+Please note that this library and APIs are in ALPHA and are subject to
+change and will break in the future. Once Flow Commerce releases its
+official 1.0 library, API changes will be backwards compatible. Until
+then - we are super grateful for your patience as we finalize the API
+for our launch.
+
+Additionally, note that the final URL for the Flow Commerce API will
+be https://api.flow.io - at the moment this domain is not ready, thus
+you will see different clients used to access the catalog or to access
+experience. This is temporary.
+
 ## Installation
 
     gem install flowcommerce
 
-
-## Usage
-
-    require 'flowcommerce'
-
-    org = "demo"
-
-    client = FlowCommerce.client("api token")
-
-    catalog = client.catalogs.get_catalog(org)
-
-    items = client.subcatalog_items.get(org, "canada", :limit => 10, :offset => 0)
-    puts "# items in subcatalog: %s" % items.size
-
-
 ## Example
 
-See example.rb for a working example
+    1. Create a file named ~/.flow/token that contains your API token
+       and nothing else
+
+    2. ruby ./example.rb <org id>
+
+Code for each example is in the examples directory, designed to really
+highlight the use of key APIs in as clear a way as possible.
 
 
 ## Documentation
 
-The full API is documented at http://apidoc.me/flow/catalog/latest
-
-Also look at
-https://github.com/flowcommerce/ruby-sdk/blob/master/lib/clients/flow_catalog_v0_client.rb
-for the complete Ruby implementation of the API.
-
-
-## Release a new version of the gem
-
-    go run release.go
-
+Complete API documentation is available at http://docs.flow.io
