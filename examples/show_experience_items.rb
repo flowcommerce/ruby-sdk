@@ -1,13 +1,14 @@
 module ShowExperienceItems
 
   def ShowExperienceItems.run(client, org)
-    destination = Util::Ask.for_string("Destination country code (e.g. CAN, AUS): ")
+    destination = client.experiences.get(org).map(&:country).first
+    if destination.nil?
+      destination = "CAN"
+    end
 
-    # Note: Can also filter by number, ip, etc.
-    items = client.experiences.get_items(org,
-                                         :destination => destination
-                                        )
-    items.foreach do |i|
+    puts "Fetching items localized to %s" % destination
+    
+    client.experiences.get_items(org, :destination => destination).each do |i|
       puts i.inspect
     end
   end

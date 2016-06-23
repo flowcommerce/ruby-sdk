@@ -13,7 +13,7 @@ module DeleteAllItems
 
       if items.empty?
         puts ""
-        puts "Deleted: {num_deleted}"
+        puts "Deleted: %s" % num_deleted
         break
       end
       puts ""

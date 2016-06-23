@@ -3,7 +3,7 @@ module CreateItems
   def CreateItems.run(client, org)
     number_items = Util::Ask.for_positive_integer("How many items should we create?")
     
-    currencies = ["USD", "CAD", "AUD", "GBP"]
+    currencies = ["USD"]
     categories = ["Apparel", "Accessories", "Mens", "Womens", "Belts", "Special"]
 
     count = 0
