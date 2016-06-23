@@ -202,8 +202,6 @@ module Io
                 :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
                 :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "-created_at" : x), String)
               }.delete_if { |k, v| v.nil? }
-              puts "/#{CGI.escape(organization)}/experiences/items"
-              puts query.inspect
               r = @client.request("/#{CGI.escape(organization)}/experiences/items").with_query(query).get
               r.map { |x| ::Io::Flow::Catalog::V0::Models::Item.new(x) }
             end
