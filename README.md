@@ -19,7 +19,15 @@ experience. This is temporary.
 
     gem install flowcommerce
 
-## Example
+    require 'flowcommerce'
+
+    client = FlowCommerce.catalog_client("<YOUR API TOKEN>")
+    client.items.get("<YOUR ORGANIZATION ID>", :limit => 5, :offset => 0).each do |i|
+      puts i.number
+    end
+     
+
+## Running the Examples in this Repository
 
     1. Create a file named ~/.flow/token that contains your API token
        and nothing else

@@ -1,7 +1,10 @@
 #!/usr/bin/env ruby
 
-#require 'flowcommerce'
-load 'lib/flowcommerce.rb'
+require 'flowcommerce'
+
+# Enable for local testing
+# load 'lib/flowcommerce.rb'
+
 load 'examples/util.rb'
 
 puts ""
