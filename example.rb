@@ -19,10 +19,7 @@ puts "Thanks and enjoy!"
 puts ""
 
 clients = begin
-            {
-              :catalog => FlowCommerce.instance("catalog"),
-              :experience => FlowCommerce.instance("experience")
-            }
+            FlowCommerce.instance
          rescue Exception => e
            puts ""
            puts "*** ERROR No API Token Found ***"

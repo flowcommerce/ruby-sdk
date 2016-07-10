@@ -1,14 +1,6 @@
 code:
   flow:
-    common:
+    api:
       version: latest
       generators:
-        ruby_client: lib/clients
-    catalog:
-      version: latest
-      generators:
-        ruby_client: lib/clients
-    experience:
-      version: latest
-      generators:
-        ruby_client: lib/clients
+        ruby_client: lib/flow_commerce

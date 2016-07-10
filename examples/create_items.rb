@@ -14,7 +14,7 @@ module CreateItems
 
       client.items.put_by_number(org,
                                  number,
-                                 ::Io::Flow::Catalog::V0::Models::ItemForm.new(
+                                 ::Io::Flow::V0::Models::ItemForm.new(
                                    :number => number,
                                    :locale => "en_US",
                                    :name => "Flow Test Item #{number}",
