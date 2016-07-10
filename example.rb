@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'flowcommerce'
+#require 'flowcommerce'
 
 # Enable for local testing
-# load 'lib/flowcommerce.rb'
+load 'lib/flowcommerce.rb'
 
 load 'examples/util.rb'
 
@@ -19,10 +19,7 @@ puts "Thanks and enjoy!"
 puts ""
 
 clients = begin
-            {
-              :catalog => FlowCommerce.instance("catalog"),
-              :experience => FlowCommerce.instance("experience")
-            }
+            FlowCommerce.instance
          rescue Exception => e
            puts ""
            puts "*** ERROR No API Token Found ***"
