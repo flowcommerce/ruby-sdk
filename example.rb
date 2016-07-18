@@ -18,8 +18,8 @@ puts ""
 puts "Thanks and enjoy!"
 puts ""
 
-clients = begin
-            FlowCommerce.instance
+client = begin
+           FlowCommerce.instance
          rescue Exception => e
            puts ""
            puts "*** ERROR No API Token Found ***"
@@ -49,7 +49,7 @@ puts ""
 puts "Running example: %s" % selection.title
 puts ""
 
-selection.run(clients, org)
+selection.run(client, org)
 
 exit(1)
 

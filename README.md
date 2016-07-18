@@ -10,18 +10,13 @@ official 1.0 library, API changes will be backwards compatible. Until
 then - we are super grateful for your patience as we finalize the API
 for our launch.
 
-Additionally, note that the final URL for the Flow Commerce API will
-be https://api.flow.io - at the moment this domain is not ready, thus
-you will see different clients used to access the catalog or to access
-experience. This is temporary.
-
 ## Installation
 
     gem install flowcommerce
 
     require 'flowcommerce'
 
-    client = FlowCommerce.catalog_client("<YOUR API TOKEN>")
+    client = FlowCommerce.instance(:token => "<YOUR API TOKEN>")
     client.items.get("<YOUR ORGANIZATION ID>", :limit => 5, :offset => 0).each do |i|
       puts i.number
     end
