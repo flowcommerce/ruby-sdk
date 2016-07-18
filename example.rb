@@ -50,23 +50,3 @@ puts "Running example: %s" % selection.title
 puts ""
 
 selection.run(client, org)
-
-exit(1)
-
-items = client.subcatalog_items.get(org, "canada", :limit => 10, :offset => 0)
-
-items.each_with_index do |item, i|
-  puts item.inspect
-  puts "  %s. item %s: %s %s" % [i, item.number, item.price.amount, item.currency]
-end
-
-
-puts ""
-puts "Searching by specific item number"
-
-items = client.subcatalog_items.get(org, "canada", :number => ['R030G-8', 'R028CL-7'])
-
-items.each_with_index do |item, i|
-  puts item.inspect
-  puts "  %s. item %s: %s %s" % [i, item.number, item.price.amount, item.currency]
-end
