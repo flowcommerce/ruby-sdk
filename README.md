@@ -35,4 +35,4 @@ highlight the use of key APIs in as clear a way as possible.
 
 ## Documentation
 
-Complete API documentation is available at http://docs.flow.io
+Complete API documentation is available at https://docs.flow.io
