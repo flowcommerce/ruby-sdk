@@ -35,8 +35,28 @@ client = begin
 
 org = ARGV.shift.to_s.strip
 if org == ""
-  org = Util::Ask.for_string("Pls enter your organization ID (note you can also pass in directly to this script): ")
+  orgs = client.organizations.get(:sort => 'id')
+
+  if orgs.empty?
+    puts "*** ERROR: Your account is not associated with any organizations"
+    puts "***        Please visit https://console.flow.io to create an organization"
+    exit(1)
+
+  elsif orgs.size == 1
+    org = orgs.first.id
+    puts "You are a member of exactly 1 organization[%s] - selecting this org" % org
+
+  else
+    puts "You are a member of:"
+    orgs.each do |org|
+      puts " - %s: environment[%s]" % [org.id, org.environment.value]
+    end
+
+    puts ""
+    org = Util::Ask.for_string("Pls enter your organization Id (note you can also pass in directly to this script): ")
+  end
 end
+
 
 Util.display_menu
 selection = nil
