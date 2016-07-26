@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'flowcommerce'
+#require 'flowcommerce'
 
 # Enable for local testing
-# load 'lib/flowcommerce.rb'
+load 'lib/flowcommerce.rb'
 
 load 'examples/util.rb'
 
