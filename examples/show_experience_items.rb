@@ -5,7 +5,7 @@ module ShowExperienceItems
 
     puts "Fetching items localized to %s" % country
     
-    client.experiences.get_items(org, :destination => country, :limit => 10, :offset => 0).each do |item|
+    client.experiences.get_items(org, :country => country, :limit => 10, :offset => 0).each do |item|
       puts "%s:" % item.number
       puts "  - base price: %s" % item.price.label
       item.local.prices.each do |price|
