@@ -12,22 +12,26 @@ module FlowCommerce
   # @param base_url Alternate URL for the API
   def FlowCommerce.instance(opts={})
     base_url = opts[:base_url].to_s.strip
-    token = ENV['FLOW_TOKEN'].to_s.strip
+    token = opts[:token].to_s.strip
 
     if token.empty?
-      file = ENV['FLOW_TOKEN_FILE'].to_s.strip
-      if file.empty?
-        file = DEFAULT_TOKEN_FILE_LOCATION
-      end
-      path = File.expand_path(file)
+      token = ENV['FLOW_TOKEN'].to_s.strip
 
-      if !File.exists?(path)
-        raise "File %s does not exist. You can specify environment variable FLOW_TOKEN or FLOW_TOKEN_FILE to explicitly provide the token" % path
-      end
-
-      token = IO.read(path).strip
       if token.empty?
-        raise "File %s did not contain an API Token" % path
+        file = ENV['FLOW_TOKEN_FILE'].to_s.strip
+        if file.empty?
+          file = DEFAULT_TOKEN_FILE_LOCATION
+        end
+        path = File.expand_path(file)
+
+        if !File.exists?(path)
+          raise "File %s does not exist. You can specify environment variable FLOW_TOKEN or FLOW_TOKEN_FILE to explicitly provide the token" % path
+        end
+
+        token = IO.read(path).strip
+        if token.empty?
+          raise "File %s did not contain an API Token" % path
+        end
       end
     end
 
