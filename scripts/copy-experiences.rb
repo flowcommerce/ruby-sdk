@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 
 # Copies experiences from a source org to a target org
+#
+# Example:
+#  ./copy-experiences.rb test-org-1 test-org-2
+#
 require 'flowcommerce'
 
 source_org = ARGV.shift.to_s.strip
@@ -20,9 +24,6 @@ def client(org)
   end
   FlowCommerce.instance(:token => IO.read(path).strip)
 end
-
-source_client = client(source_org)
-target_client = client(source_org)
 
 def each_experience(client, org, limit=100, offset=0, &block)
   all = client.experiences.get(org, :limit => limit, :offset => offset)
@@ -63,6 +64,9 @@ def copy_experience(client, org, exp)
   )
   client.experiences.post(org, form)
 end
+
+source_client = client(source_org)
+target_client = client(source_org)
 
 each_experience(source_client, source_org) do |exp|
   puts "%s/%s" % [source_org, exp.key]
