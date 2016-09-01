@@ -25,7 +25,10 @@ module Util
     Util::MenuItem.new("Experiences: Show all", "examples/show_experiences.rb", Proc.new { |client, org| ShowExperiences.run(client, org) }),
     Util::MenuItem.new("Experiences: Create", "examples/create_experience.rb", Proc.new { |client, org| CreateExperience.run(client, org) }),
     Util::MenuItem.new("Experiences: Delete All", "examples/delete_all_experiences.rb", Proc.new { |client, org| DeleteAllExperiences.run(client, org) }),
-    Util::MenuItem.new("Experience Items: Show", "examples/show_experience_items.rb", Proc.new { |client, org| ShowExperienceItems.run(client, org) })
+    Util::MenuItem.new("Experience Items: Show", "examples/show_experience_items.rb", Proc.new { |client, org| ShowExperienceItems.run(client, org) }),
+
+    Util::MenuItem.new("Payment: Create card", "examples/create_card.rb", Proc.new { |client, org| CreateCard.run(client, org) }),
+    Util::MenuItem.new("Payment: Create authorization", "examples/create_authorization.rb", Proc.new { |client, org| CreateAuthorization.run(client, org) })
   ]
 
   def Util.display_menu
