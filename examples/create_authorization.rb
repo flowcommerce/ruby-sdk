@@ -5,7 +5,7 @@ module CreateAuthorization
 
     card = client.cards.post(org,
                              ::Io::Flow::V0::Models::CardForm.new(
-                               :number => "378282246310005",
+                               :number => "4012888888881881",
                                :name => "Joe Smith",
                                :expiration_month => 1,
                                :expiration_year => Time.now.year + 1
@@ -16,7 +16,7 @@ module CreateAuthorization
     auth = client.authorizations.post(org,
                                       ::Io::Flow::V0::Models::DirectAuthorizationForm.new(
                                         :token => card.token,
-                                        :amount => 3122,
+                                        :amount => 3110,
                                         :currency => "USD",
                                         :customer => {
                                           :name => {:first => "Joe", :last => "Smith"}
