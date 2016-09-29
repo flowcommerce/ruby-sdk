@@ -15926,15 +15926,15 @@ module Io
         # Represents information specific to an item in a given subcatalog
         class SubcatalogItem
 
-          attr_reader :id, :item, :item_function, :item_status
+          attr_reader :id, :item, :status, :item_function
 
           def initialize(incoming={})
             opts = HttpClient::Helper.symbolize_keys(incoming)
-            HttpClient::Preconditions.require_keys(opts, [:id, :item, :item_status], 'SubcatalogItem')
+            HttpClient::Preconditions.require_keys(opts, [:id, :item, :status], 'SubcatalogItem')
             @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
             @item = (x = opts.delete(:item); x.is_a?(::Io::Flow::V0::Models::Item) ? x : ::Io::Flow::V0::Models::Item.new(x))
+            @status = (x = opts.delete(:status); x.is_a?(::Io::Flow::V0::Models::SubcatalogItemStatus) ? x : ::Io::Flow::V0::Models::SubcatalogItemStatus.apply(x))
             @item_function = (x = opts.delete(:item_function); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::V0::Models::ExpandableItemFunction) ? x : ::Io::Flow::V0::Models::ExpandableItemFunction.from_json(x)))
-            @item_status = (x = opts.delete(:item_status); x.is_a?(::Io::Flow::V0::Models::SubcatalogItemStatus) ? x : ::Io::Flow::V0::Models::SubcatalogItemStatus.apply(x))
           end
 
           def to_json
@@ -15949,8 +15949,8 @@ module Io
             {
               :id => id,
               :item => item.to_hash,
-              :item_function => item_function.nil? ? nil : item_function.to_hash,
-              :item_status => item_status.value
+              :status => status.value,
+              :item_function => item_function.nil? ? nil : item_function.to_hash
             }
           end
 
