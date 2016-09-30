@@ -36,3 +36,13 @@ highlight the use of key APIs in as clear a way as possible.
 ## Documentation
 
 Complete API documentation is available at https://docs.flow.io
+
+## Debugging / Issues
+
+If you are seeing very slow (multi-second response times), it might be this: [Net::HTTP extremely slow responses for HTTPS requests](http://stackoverflow.com/questions/29945204/nethttp-extremely-slow-responses-for-https-requests)
+
+The solution is to run
+
+```networksetup -setv6off Wi-Fi```
+
+
