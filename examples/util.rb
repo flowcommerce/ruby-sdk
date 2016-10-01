@@ -20,6 +20,8 @@ module Util
   MENU = [
     Util::MenuItem.new("Catalog: Create items", "examples/create_items.rb", Proc.new { |client, org| CreateItems.run(client, org) }),
     Util::MenuItem.new("Catalog: Show items", "examples/show_items.rb", Proc.new { |client, org| ShowItems.run(client, org) }),
+    
+    Util::MenuItem.new("Catalog: Show statistics", "examples/catalog_statistics.rb", Proc.new { |client, org| CatalogStatistics.run(client, org) }),
     Util::MenuItem.new("Catalog: Delete all items", "examples/delete_all_items.rb", Proc.new { |client, org| DeleteAllItems.run(client, org) }),
 
     Util::MenuItem.new("Experiences: Show all", "examples/show_experiences.rb", Proc.new { |client, org| ShowExperiences.run(client, org) }),

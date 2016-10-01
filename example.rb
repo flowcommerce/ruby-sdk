@@ -59,7 +59,16 @@ end
 
 
 Util.display_menu
-selection = nil
+
+# Allow user to pass in selection directly from command line
+# arguments, if valid
+selection = ARGV.shift.to_s.strip
+if selection.to_i.to_s == selection && selection.to_i > 1
+  selection = Util::MENU[selection.to_i - 1]
+else
+  selection = nil
+end
+
 while selection.nil?
   value = Util::Ask.for_positive_integer("Select example to run:")
   selection = Util::MENU[value - 1]
