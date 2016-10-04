@@ -329,6 +329,10 @@ module Io
           @token_validations ||= ::Io::Flow::V0::Clients::TokenValidations.new(self)
         end
 
+        def uploads
+          @uploads ||= ::Io::Flow::V0::Clients::Uploads.new(self)
+        end
+
         def users
           @users ||= ::Io::Flow::V0::Clients::Users.new(self)
         end
@@ -3689,6 +3693,22 @@ module Io
             HttpClient::Preconditions.assert_class('token_validation_form', token_validation_form, ::Io::Flow::V0::Models::TokenValidationForm)
             r = @client.request("/token-validations").with_json(token_validation_form.to_json).post
             ::Io::Flow::V0::Models::TokenValidation.new(r)
+          end
+
+        end
+
+        class Uploads
+
+          def initialize(client)
+            @client = HttpClient::Preconditions.assert_class('client', client, ::Io::Flow::V0::Client)
+          end
+
+          def post_by_name(organization, name, hash)
+            HttpClient::Preconditions.assert_class('organization', organization, String)
+            HttpClient::Preconditions.assert_class('name', name, String)
+            HttpClient::Preconditions.assert_class('hash', hash, Hash)
+            r = @client.request("/#{CGI.escape(organization)}/uploads/#{CGI.escape(name)}").with_json(hash.to_json).post
+            ::Io::Flow::V0::Models::Upload.new(r)
           end
 
         end
@@ -8527,6 +8547,32 @@ module Io
               :attributes => attributes,
               :dimensions => dimensions,
               :images => images
+            }
+          end
+
+        end
+
+        class CatalogReference
+
+          attr_reader :id
+
+          def initialize(incoming={})
+            opts = HttpClient::Helper.symbolize_keys(incoming)
+            HttpClient::Preconditions.require_keys(opts, [:id], 'CatalogReference')
+            @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
+          end
+
+          def to_json
+            JSON.dump(to_hash)
+          end
+
+          def copy(incoming={})
+            CatalogReference.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+          end
+
+          def to_hash
+            {
+              :id => id
             }
           end
 
@@ -16638,14 +16684,15 @@ module Io
 
         class Targeting
 
-          attr_reader :id, :key, :queries, :subcatalog
+          attr_reader :id, :key, :queries, :catalog, :subcatalog
 
           def initialize(incoming={})
             opts = HttpClient::Helper.symbolize_keys(incoming)
-            HttpClient::Preconditions.require_keys(opts, [:id, :key, :queries], 'Targeting')
+            HttpClient::Preconditions.require_keys(opts, [:id, :key, :queries, :catalog], 'Targeting')
             @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
             @key = HttpClient::Preconditions.assert_class('key', opts.delete(:key), String)
             @queries = HttpClient::Preconditions.assert_class('queries', opts.delete(:queries), Array).map { |v| (x = v; x.is_a?(::Io::Flow::V0::Models::TargetingQuery) ? x : ::Io::Flow::V0::Models::TargetingQuery.new(x)) }
+            @catalog = (x = opts.delete(:catalog); x.is_a?(::Io::Flow::V0::Models::CatalogReference) ? x : ::Io::Flow::V0::Models::CatalogReference.new(x))
             @subcatalog = (x = opts.delete(:subcatalog); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::V0::Models::SubcatalogReference) ? x : ::Io::Flow::V0::Models::SubcatalogReference.new(x)))
           end
 
@@ -16662,6 +16709,7 @@ module Io
               :id => id,
               :key => key,
               :queries => queries.map { |o| o.to_hash },
+              :catalog => catalog.to_hash,
               :subcatalog => subcatalog.nil? ? nil : subcatalog.to_hash
             }
           end
@@ -16707,7 +16755,7 @@ module Io
             opts = HttpClient::Helper.symbolize_keys(incoming)
             HttpClient::Preconditions.require_keys(opts, [:id, :targeting, :item_number, :query], 'TargetingItem')
             @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
-            @targeting = (x = opts.delete(:targeting); x.is_a?(::Io::Flow::V0::Models::TargetingReference) ? x : ::Io::Flow::V0::Models::TargetingReference.new(x))
+            @targeting = (x = opts.delete(:targeting); x.is_a?(::Io::Flow::V0::Models::TargetingSummary) ? x : ::Io::Flow::V0::Models::TargetingSummary.new(x))
             @item_number = HttpClient::Preconditions.assert_class('item_number', opts.delete(:item_number), String)
             @query = (x = opts.delete(:query); x.is_a?(::Io::Flow::V0::Models::TargetingQuery) ? x : ::Io::Flow::V0::Models::TargetingQuery.new(x))
           end
@@ -16871,15 +16919,16 @@ module Io
 
         end
 
-        class TargetingReference
+        class TargetingSummary
 
-          attr_reader :id, :key, :subcatalog
+          attr_reader :id, :key, :catalog, :subcatalog
 
           def initialize(incoming={})
             opts = HttpClient::Helper.symbolize_keys(incoming)
-            HttpClient::Preconditions.require_keys(opts, [:id, :key], 'TargetingReference')
+            HttpClient::Preconditions.require_keys(opts, [:id, :key, :catalog], 'TargetingSummary')
             @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
             @key = HttpClient::Preconditions.assert_class('key', opts.delete(:key), String)
+            @catalog = (x = opts.delete(:catalog); x.is_a?(::Io::Flow::V0::Models::CatalogReference) ? x : ::Io::Flow::V0::Models::CatalogReference.new(x))
             @subcatalog = (x = opts.delete(:subcatalog); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::V0::Models::SubcatalogReference) ? x : ::Io::Flow::V0::Models::SubcatalogReference.new(x)))
           end
 
@@ -16888,13 +16937,14 @@ module Io
           end
 
           def copy(incoming={})
-            TargetingReference.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+            TargetingSummary.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
           end
 
           def to_hash
             {
               :id => id,
               :key => key,
+              :catalog => catalog.to_hash,
               :subcatalog => subcatalog.nil? ? nil : subcatalog.to_hash
             }
           end
@@ -18031,6 +18081,40 @@ module Io
               :timestamp => timestamp,
               :type => type.value,
               :tracking => tracking.to_hash
+            }
+          end
+
+        end
+
+        # Provides the ability to upload a file to a URL (an expiring s3 url, usually
+        # valid for 1 week)
+        class Upload
+
+          attr_reader :id, :name, :url, :expiration
+
+          def initialize(incoming={})
+            opts = HttpClient::Helper.symbolize_keys(incoming)
+            HttpClient::Preconditions.require_keys(opts, [:id, :name, :url, :expiration], 'Upload')
+            @id = HttpClient::Preconditions.assert_class('id', opts.delete(:id), String)
+            @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
+            @url = HttpClient::Preconditions.assert_class('url', opts.delete(:url), String)
+            @expiration = HttpClient::Preconditions.assert_class('expiration', HttpClient::Helper.to_date_time_iso8601(opts.delete(:expiration)), DateTime)
+          end
+
+          def to_json
+            JSON.dump(to_hash)
+          end
+
+          def copy(incoming={})
+            Upload.new(to_hash.merge(HttpClient::Helper.symbolize_keys(incoming)))
+          end
+
+          def to_hash
+            {
+              :id => id,
+              :name => name,
+              :url => url,
+              :expiration => expiration
             }
           end
 
