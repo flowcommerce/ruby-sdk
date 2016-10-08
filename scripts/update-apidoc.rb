@@ -35,5 +35,8 @@ if current == latest
 end
 
 msg = "Update API version from %s to %s" % [current, latest]
+msg << ""
+msg << "  - See http://apidoc.me/history?org=flow&app=api&from=%s&to=%s" % [current, latest]
+
 system("git commit -m '%s' lib/flow_commerce/flow*rb" % msg)
 
