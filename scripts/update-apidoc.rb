@@ -28,11 +28,9 @@ current = extract_version(path)
 system("cd %s && apidoc update" % File.join(dir, ".."))
 latest = extract_version(path)
 
-puts "current: %s" % current
-puts "latest: %s" % latest
-
 if current == latest
   puts "apidoc API version remains at %s" % current
+  puts ""
   exit(1)
 end
 
