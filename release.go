@@ -8,8 +8,7 @@ func main() {
 	executor := executor.Create("ruby-sdk")
 
 	executor = executor.Add("rm -f ./flowcommerce-*.gem")
-	executor = executor.Add("apidoc update")
-	executor = executor.Add("git commit -m 'Update to latest API' lib/flow_commerce/flow*rb")
+	executor = executor.Add("scripts/update-apidoc.rb")
 	executor = executor.Add("git fetch --tags origin")
 	executor = executor.Add("dev tag")
 	executor = executor.Add("gem build flowcommerce.gemspec")
