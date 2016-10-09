@@ -52,7 +52,7 @@ module Util
     if value.nil? || value == 0
       "0%"
     else
-      value = sprintf('%.2f', (value * 100.0).to_f.round(2))
+      value = sprintf('%.2f', value.to_f.round(2))
       value.sub(/\.00$/, '') + "%"
     end
   end
