@@ -29,6 +29,8 @@ module Util
     Util::MenuItem.new("Experiences: Delete All", "examples/delete_all_experiences.rb", Proc.new { |client, org| DeleteAllExperiences.run(client, org) }),
     Util::MenuItem.new("Experience Items: Show", "examples/show_experience_items.rb", Proc.new { |client, org| ShowExperienceItems.run(client, org) }),
 
+    Util::MenuItem.new("Landed Cost", "examples/landed_cost.rb", Proc.new { |client, org| LandedCost.run(client, org) }),
+
     Util::MenuItem.new("Payment: Create card", "examples/create_card.rb", Proc.new { |client, org| CreateCard.run(client, org) }),
     Util::MenuItem.new("Payment: Create authorization", "examples/create_authorization.rb", Proc.new { |client, org| CreateAuthorization.run(client, org) })
   ]
@@ -46,6 +48,15 @@ module Util
     items.shuffle.first(n)
   end
 
+  def Util.pct(value)
+    if value.nil? || value == 0
+      "0%"
+    else
+      value = sprintf('%.2f', (value * 100.0).to_f.round(2))
+      value.sub(/\.00$/, '') + "%"
+    end
+  end
+  
   # Simple library to ask user for input, with easy mocakability for
   # testing
   class Ask
