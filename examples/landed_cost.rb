@@ -1,7 +1,10 @@
 module LandedCost
 
   def LandedCost.run(client, org)
-    destination = Util::Ask.for_string("Destination country [Default 'CAN']: ", :default => "CAN")
+    destination = ARGV.shift.to_s.strip
+    if destination.empty?
+      destination = Util::Ask.for_string("Destination country [Default 'CAN']: ", :default => "CAN")
+    end
 
     item_numbers = ARGV
     if item_numbers.empty?
