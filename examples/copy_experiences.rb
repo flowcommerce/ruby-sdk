@@ -13,7 +13,7 @@ module CopyExperiences
     max = experiences.size
 
     # iterate through experiences
-    experiences.sort_by{|e| e.position}.each_with_index do |exp, i|
+    experiences.each_with_index do |exp, i|
       puts "[#{i+1}/#{max}] Experience key[#{exp.key}] from base org[#{org}] to target org[#{target_org}]"
 
       CopyExperiences.copy_experience(client, org, target_org, exp)
@@ -36,9 +36,17 @@ module CopyExperiences
     puts "    - position: #{exp.position}"
     puts "    - region: #{exp.region.id}"
 
-=begin
+    # If experience already exists, we need to get the subcatalog_id
+    # Or else we get generic error with message "subcatalog Id is required when updating an experience"
+    # GET /:organization/experiences/:key
+    begin
+      subcatalog_id = client.experiences.get_by_key(target_org, exp.key).subcatalog.id
+    rescue Exception => e
+      subcatalog_id = nil
+    end
+
     # PUT /:organization/experiences/:key
-    new_experience = client.experiences.put_pricing_by_key(
+    new_experience = client.experiences.put_by_key(
       target_org,
       exp.key,
       ::Io::Flow::V0::Models::ExperienceForm.new(
@@ -50,11 +58,11 @@ module CopyExperiences
         :currency => exp.currency,
         :language => exp.language,
         :measurement_system => exp.measurement_system,
-        :position => exp.position
+        :position => exp.position,
+        :subcatalog_id => subcatalog_id
       )
     )
-    puts "    - CREATED NEW EXPERIENCE: ID: #{new_experience.id}, KEY: #{new_experience.key}, NAME: #{new_experience.name}"
-=end
+    puts "    - UPSERTED EXPERIENCE: ID: #{new_experience.id}, KEY: #{new_experience.key}, NAME: #{new_experience.name}"
   end
 
   def CopyExperiences.copy_pricing(client, org, target_org, exp)
@@ -71,7 +79,6 @@ module CopyExperiences
       puts "    - rounding: none"
     end
 
-=begin
     # PUT /:organization/experiences/:key/pricing
     new_pricing = client.experiences.put_pricing_by_key(
       target_org,
@@ -82,8 +89,7 @@ module CopyExperiences
         :rounding => pricing.rounding
       )
     )
-    puts "    - CREATED NEW PRICING: VAT: #{new_pricing.vat.value}, DUTY: #{new_pricing.duty.value}, ROUNDING: #{new_pricing.rounding}"
-=end
+    puts "       - UPSERTED PRICING: VAT: #{new_pricing.vat.value}, DUTY: #{new_pricing.duty.value}, ROUNDING: #{new_pricing.rounding.to_json}"
   end
 
   def CopyExperiences.copy_tiers(client, org, target_org, exp)
@@ -110,7 +116,6 @@ module CopyExperiences
         puts "            - outcome: #{rule.outcome.to_hash.to_s}"
       end
 
-=begin
       # POST /:organization/tiers
       new_tier = client.tiers.post(
         target_org,
@@ -132,7 +137,6 @@ module CopyExperiences
         )
       )
       puts "        - CREATED NEW TIER: ID: #{new_tier.id}, NAME: #{new_tier.name}, SERVICES: #{new_tier.services.map{|s| s.id}}"
-=end
     end
   end
 
