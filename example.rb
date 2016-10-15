@@ -11,7 +11,7 @@ puts ""
 puts "Welcome to Flow Commerce"
 puts "---------------------------------------------------------------------------------"
 puts "We hope these examples are helpful! We're always open to suggestions and comments"
-puts "Pls feel free to:"
+puts "Please feel free to:"
 puts "  - open PRs or log issues in github https://github.com/flowcommerce/ruby-sdk"
 puts "  - email us at tech@flow.io"
 puts ""
@@ -53,7 +53,7 @@ if org == ""
     end
 
     puts ""
-    org = Util::Ask.for_string("Pls enter your organization Id (note you can also pass in directly to this script): ")
+    org = Util::Ask.for_string("Please enter your organization ID (note you can also pass in directly to this script): ")
   end
 end
 
