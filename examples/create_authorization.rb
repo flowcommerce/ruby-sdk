@@ -1,8 +1,6 @@
 module CreateAuthorization
 
   def CreateAuthorization.run(client, org)
-    region_id = "can"
-
     card = client.cards.post(org,
                              ::Io::Flow::V0::Models::CardForm.new(
                                :number => "4012888888881881",
