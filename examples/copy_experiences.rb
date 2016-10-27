@@ -43,7 +43,7 @@ module CopyExperiences
     # Or else we get generic error with message "subcatalog Id is required when updating an experience"
     # GET /:organization/experiences/:key
     begin
-      subcatalog_id = client.experiences.get_by_key(target_org, exp.key).subcatalog.id
+      subcatalog_id = target_client.experiences.get_by_key(target_org, exp.key).subcatalog.id
     rescue Exception => e
       subcatalog_id = nil
     end
