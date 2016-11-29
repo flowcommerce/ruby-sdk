@@ -14,19 +14,20 @@ module Util
       load @path
       @procedure.call(client, org)
     end
-    
+
   end
 
   MENU = [
     Util::MenuItem.new("Catalog: Create items", "examples/create_items.rb", Proc.new { |client, org| CreateItems.run(client, org) }),
     Util::MenuItem.new("Catalog: Show items", "examples/show_items.rb", Proc.new { |client, org| ShowItems.run(client, org) }),
-    
+
     Util::MenuItem.new("Catalog: Show statistics", "examples/catalog_statistics.rb", Proc.new { |client, org| CatalogStatistics.run(client, org) }),
     Util::MenuItem.new("Catalog: Delete all items", "examples/delete_all_items.rb", Proc.new { |client, org| DeleteAllItems.run(client, org) }),
 
     Util::MenuItem.new("Experiences: Show all", "examples/show_experiences.rb", Proc.new { |client, org| ShowExperiences.run(client, org) }),
     Util::MenuItem.new("Experiences: Create", "examples/create_experience.rb", Proc.new { |client, org| CreateExperience.run(client, org) }),
     Util::MenuItem.new("Experiences: Delete All", "examples/delete_all_experiences.rb", Proc.new { |client, org| DeleteAllExperiences.run(client, org) }),
+    Util::MenuItem.new("Experiences: Delete Experiences", "examples/delete_experience.rb", Proc.new { |client, org| DeleteExperience.run(client, org) }),
     Util::MenuItem.new("Experience: Copy to another org", "examples/copy_experiences.rb", Proc.new { |client, org| CopyExperiences.run(client, org) }),
     Util::MenuItem.new("Experience Items: Show", "examples/show_experience_items.rb", Proc.new { |client, org| ShowExperienceItems.run(client, org) }),
 
@@ -57,7 +58,7 @@ module Util
       value.sub(/\.00$/, '') + "%"
     end
   end
-  
+
   # Simple library to ask user for input, with easy mocakability for
   # testing
   class Ask
