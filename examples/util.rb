@@ -27,7 +27,7 @@ module Util
     Util::MenuItem.new("Experiences: Show all", "examples/show_experiences.rb", Proc.new { |client, org| ShowExperiences.run(client, org) }),
     Util::MenuItem.new("Experiences: Create", "examples/create_experience.rb", Proc.new { |client, org| CreateExperience.run(client, org) }),
     Util::MenuItem.new("Experiences: Delete All", "examples/delete_all_experiences.rb", Proc.new { |client, org| DeleteAllExperiences.run(client, org) }),
-    Util::MenuItem.new("Experiences: Delete Single Experience", "examples/delete_experience.rb", Proc.new { |client, org| DeleteExperience.run(client, org) }),
+    Util::MenuItem.new("Experiences: Delete Experiences", "examples/delete_experience.rb", Proc.new { |client, org| DeleteExperience.run(client, org) }),
     Util::MenuItem.new("Experience: Copy to another org", "examples/copy_experiences.rb", Proc.new { |client, org| CopyExperiences.run(client, org) }),
     Util::MenuItem.new("Experience Items: Show", "examples/show_experience_items.rb", Proc.new { |client, org| ShowExperienceItems.run(client, org) }),
 
