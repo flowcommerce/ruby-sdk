@@ -39,10 +39,18 @@ Complete API documentation is available at https://docs.flow.io
 
 ## Debugging / Issues
 
+### IPv6
+
+Please disable IPv6. We are currently working on IPv6 compatibility for the APIs.
+
+#### Mac OS
+
 If you are seeing very slow (multi-second response times), it might be this: [Net::HTTP extremely slow responses for HTTPS requests](http://stackoverflow.com/questions/29945204/nethttp-extremely-slow-responses-for-https-requests)
 
 The solution is to run
 
 ```networksetup -setv6off Wi-Fi```
 
+#### Ububtu
 
+[https://support.purevpn.com/how-to-disable-ipv6-linuxubuntu](https://support.purevpn.com/how-to-disable-ipv6-linuxubuntu)
