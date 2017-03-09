@@ -22007,8 +22007,8 @@ module Io
             @auth = nil
             @headers = {}
             @header_keys_lower_case = []
-            @open_timeout = opts[:open_timeout]
-            @read_timeout = opts[:read_timeout]
+            @open_timeout = opts[:open_timeout] || Constants::DEFAULT_OPEN_TIMEOUT
+            @read_timeout = opts[:read_timeout] || Constants::DEFAULT_READ_TIMEOUT
           end
 
           def with_header(name, value)
