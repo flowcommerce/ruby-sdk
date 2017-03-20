@@ -22981,8 +22981,6 @@ module Io
           end
 
           def execute(request)
-            Preconditions.assert_class('request', request, Net::Http::Request)
-
             response = begin
                          @client.request(request)
                        rescue SocketError => e
