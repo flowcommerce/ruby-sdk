@@ -22989,6 +22989,8 @@ module Io
 
         class DefaultHttpHandlerInstance < HttpHandlerInstance
 
+          attr_reader :client
+          
           def initialize(base_uri)
             @base_uri = Preconditions.assert_class('base_uri', base_uri, URI)
             @client = Net::HTTP.new(@base_uri.host, @base_uri.port)
@@ -23152,7 +23154,7 @@ module Io
             curl << "'%s%s'" % [@base_uri, path]
             # DEBUG puts curl.join(" ")
 
-            raw_response = @http_handler.new(@base_uri).instance(request.path).execute(request)
+            raw_response = @http_handler.instance(@base_uri, request.path).execute(request)
             response = raw_response.to_s == "" ? nil : JSON.parse(raw_response)
 
             if block_given?
