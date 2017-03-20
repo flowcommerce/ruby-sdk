@@ -4,7 +4,7 @@
 # to log requests
 
 load 'lib/flowcommerce.rb'
-load 'lib/logging_http_client.rb'
+load 'extensions/logging_http_client.rb'
 
 client = FlowCommerce.instance(:http_handler => LoggingHttpClient.new("https://api.flow.io", "/tmp/test.log"))
 

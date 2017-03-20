@@ -36,9 +36,10 @@ module Io
 
         def initialize(url, opts={})
           @url = HttpClient::Preconditions.assert_class('url', url, String)
+          @base_url = URI(url)
           @authorization = HttpClient::Preconditions.assert_class_or_nil('authorization', opts.delete(:authorization), HttpClient::Authorization)
           @default_headers = HttpClient::Preconditions.assert_class('default_headers', opts.delete(:default_headers) || {}, Hash)
-          @http_handler = HttpClient::Preconditions.assert_class('http_handler', opts.delete(:http_handler) || HttpClient::DefaultHttpHandler.new(@url), HttpClient::HttpHandler)
+          @http_handler = opts.delete(:http_handler) || HttpClient::HttpHandler
 
           HttpClient::Preconditions.assert_empty_opts(opts)
           HttpClient::Preconditions.check_state(url.match(/http.+/i), "URL[%s] must start with http" % url)
@@ -51,7 +52,7 @@ module Io
 
         def request(path=nil)
           HttpClient::Preconditions.assert_class_or_nil('path', path, String)
-          request = HttpClient::Request.new(@http_handler, path.to_s).with_header('User-Agent', Constants::USER_AGENT).with_header('X-Apidoc-Version', Constants::VERSION).with_header('X-Apidoc-Version-Major', Constants::VERSION_MAJOR)
+          request = HttpClient::Request.new(@http_handler, @base_url, path.to_s).with_header('User-Agent', Constants::USER_AGENT).with_header('X-Apidoc-Version', Constants::VERSION).with_header('X-Apidoc-Version-Major', Constants::VERSION_MAJOR)
 
           @default_headers.each do |key, value|
             request = request.with_header(key, value)
@@ -22954,12 +22955,17 @@ module Io
 
         class HttpHandler
 
-          attr_reader :base_uri
-
-          def initialize(base_uri)
-            Preconditions.assert_class('base_uri', base_uri, String)
-            @base_uri = URI(base_uri)
+          # Returns a client instance to use
+          #
+          # @param base_uri The base URI for this API
+          # @param path the Requested full http path (including any query strings)
+          def instance(base_uri, path)
+            raise "Override in subclass"
           end
+
+        end
+
+        class HttpHandlerInstance
 
           # Executes a request. The provided request object will be an
           # instance of Net::HTTP (e.g. Net::HTTP::Get)
@@ -22971,11 +22977,20 @@ module Io
 
         class DefaultHttpHandler < HttpHandler
 
-          attr_reader :client
+          def initialize(base_uri)
+            @base_uri = Preconditions.assert_class('base_uri', base_uri, URI)
+          end
+
+          def instance(path)
+            DefaultHttpHandlerInstance.new(@base_uri)
+          end
+
+        end
+
+        class DefaultHttpHandlerInstance < HttpHandlerInstance
 
           def initialize(base_uri)
-            super(base_uri)
-
+            @base_uri = Preconditions.assert_class('base_uri', base_uri, URI)
             @client = Net::HTTP.new(@base_uri.host, @base_uri.port)
             if @base_uri.scheme == "https"
               configure_ssl
@@ -23000,7 +23015,7 @@ module Io
 
           private
           def full_uri(path)
-            @base_uri.to_s + request.path
+            File.join(@base_uri.to_s, path)
           end
 
           # If HTTPS is required, this method accepts an HTTP Client and configures SSL
@@ -23017,8 +23032,9 @@ module Io
 
           attr_reader :path
 
-          def initialize(http_handler, path)
-            @http_handler = HttpClient::Preconditions.assert_class('http_handler', http_handler, HttpClient::HttpHandler)
+          def initialize(http_handler, base_uri, path)
+            @http_handler = http_handler
+            @base_uri = Preconditions.assert_class('base_uri', base_uri, URI)
             @path = Preconditions.assert_class('path', path, String)
             @params = nil
             @body = nil
@@ -23133,10 +23149,10 @@ module Io
               request.add_field(key, value)
             }
 
-            curl << "'%s%s'" % [@http_handler.base_uri, path]
+            curl << "'%s%s'" % [@base_uri, path]
             # DEBUG puts curl.join(" ")
 
-            raw_response = @http_handler.execute(request)
+            raw_response = @http_handler.new(@base_uri).instance(request.path).execute(request)
             response = raw_response.to_s == "" ? nil : JSON.parse(raw_response)
 
             if block_given?
