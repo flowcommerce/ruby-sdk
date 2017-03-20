@@ -28,15 +28,19 @@ module Io
           USER_AGENT = 'apidoc:0.11.74 http://www.apidoc.me/flow/api/0.2.80/ruby_client' unless defined?(Constants::USER_AGENT)
           VERSION = '0.2.79' unless defined?(Constants::VERSION)
           VERSION_MAJOR = 0 unless defined?(VERSION_MAJOR)
+          DEFAULT_OPEN_TIMEOUT = 60
+          DEFAAULT_READ_TIMEOUT = 60
 
         end
 
         attr_reader :url
+        attr_accessor :open_timeout, :read_timeout
 
         def initialize(url, opts={})
           @url = HttpClient::Preconditions.assert_class('url', url, String)
           @authorization = HttpClient::Preconditions.assert_class_or_nil('authorization', opts.delete(:authorization), HttpClient::Authorization)
           @default_headers = HttpClient::Preconditions.assert_class('default_headers', opts.delete(:default_headers) || {}, Hash)
+          reset_timeouts
           HttpClient::Preconditions.assert_empty_opts(opts)
           HttpClient::Preconditions.check_state(url.match(/http.+/i), "URL[%s] must start with http" % url)
         end
@@ -46,9 +50,14 @@ module Io
           Client.new(Constants::BASE_URL, opts)
         end
 
+        def reset_timeouts
+          @open_timeout = Constants::DEFAULT_OPEN_TIMEOUT
+          @read_timeout = Constants::DEFAULT_READ_TIMEOUT
+        end
+
         def request(path=nil)
           HttpClient::Preconditions.assert_class_or_nil('path', path, String)
-          request = HttpClient::Request.new(URI.parse(@url + path.to_s)).with_header('User-Agent', Constants::USER_AGENT).with_header('X-Apidoc-Version', Constants::VERSION).with_header('X-Apidoc-Version-Major', Constants::VERSION_MAJOR)
+          request = HttpClient::Request.new(URI.parse(@url + path.to_s), open_timeout: @open_timeout, read_timeout: @read_timeout).with_header('User-Agent', Constants::USER_AGENT).with_header('X-Apidoc-Version', Constants::VERSION).with_header('X-Apidoc-Version-Major', Constants::VERSION_MAJOR)
 
           @default_headers.each do |key, value|
             request = request.with_header(key, value)
@@ -22951,13 +22960,15 @@ module Io
 
         class Request
 
-          def initialize(uri)
+          def initialize(uri, opts={})
             @uri = Preconditions.assert_class('uri', uri, URI)
             @params = nil
             @body = nil
             @auth = nil
             @headers = {}
             @header_keys_lower_case = []
+            @open_timeout = opts[:open_timeout] || Constants::DEFAULT_OPEN_TIMEOUT
+            @read_timeout = opts[:read_timeout] || Constants::DEFAULT_READ_TIMEOUT
           end
 
           def with_header(name, value)
@@ -23009,6 +23020,8 @@ module Io
             if @uri.scheme == "https"
               configure_ssl(client)
             end
+            client.open_timeout = @open_timeout
+            client.read_timeout = @read_timeout
             client
           end
 
