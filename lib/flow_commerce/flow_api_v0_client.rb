@@ -38,7 +38,8 @@ module Io
           @url = HttpClient::Preconditions.assert_class('url', url, String)
           @authorization = HttpClient::Preconditions.assert_class_or_nil('authorization', opts.delete(:authorization), HttpClient::Authorization)
           @default_headers = HttpClient::Preconditions.assert_class('default_headers', opts.delete(:default_headers) || {}, Hash)
-          @http_handler = HttpClient::Preconditions.assert_class('http_handler', opts.delete(:http_handler) || HttpClient::DefaultHttpHandler.new(@url), HttpClient::HttpHandler)
+          http_handler_class = HttpClient::Preconditions.assert_class('http_handler', opts.delete(:http_handler) || HttpClient::DefaultHttpHandler, Class)
+          @http_handler = http_handler_class.send(:new, @url)
 
           HttpClient::Preconditions.assert_empty_opts(opts)
           HttpClient::Preconditions.check_state(url.match(/http.+/i), "URL[%s] must start with http" % url)
@@ -22971,6 +22972,8 @@ module Io
         
         class DefaultHttpHandler < HttpHandler
 
+          attr_reader :client
+          
           def initialize(base_uri)
             super(base_uri)
 
@@ -23004,7 +23007,7 @@ module Io
           # If HTTPS is required, this method accepts an HTTP Client and configures SSL
           def configure_ssl
             @client.use_ssl = true
-            @client.ssl_version = :TLSv1_2
+            #@client.ssl_version = :TLSv1_2
             @client.verify_mode = OpenSSL::SSL::VERIFY_PEER
             @client.cert_store = OpenSSL::X509::Store.new
             @client.cert_store.set_default_paths
