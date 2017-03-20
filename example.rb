@@ -18,10 +18,9 @@ puts ""
 puts "Thanks and enjoy!"
 puts ""
 
-client = 
+client = begin
            FlowCommerce.instance
-begin
-rescue Exception => e
+         rescue Exception => e
            puts ""
            puts "*** ERROR No API Token Found ***"
            puts e.to_s
