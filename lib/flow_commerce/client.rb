@@ -13,7 +13,7 @@ module FlowCommerce
   def FlowCommerce.instance(opts={})
     base_url = opts[:base_url].to_s.strip
     token = opts[:token].to_s.strip
-    http_handler = opts[:http_handler] || ::Io::Flow::V0::HttpClient::DefaultHttpHandler
+    http_handler = opts[:http_handler]
 
     if token.empty?
       token = ENV['FLOW_TOKEN'].to_s.strip
