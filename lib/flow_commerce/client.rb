@@ -13,6 +13,7 @@ module FlowCommerce
   def FlowCommerce.instance(opts={})
     base_url = opts[:base_url].to_s.strip
     token = opts[:token].to_s.strip
+    http_handler = opts[:http_handler]
 
     if token.empty?
       token = ENV['FLOW_TOKEN'].to_s.strip
@@ -38,9 +39,9 @@ module FlowCommerce
     auth = Io::Flow::V0::HttpClient::Authorization.basic(token)
 
     if base_url.empty?
-      Io::Flow::V0::Client.at_base_url(:authorization => auth)
+      Io::Flow::V0::Client.at_base_url(:authorization => auth, :http_handler => http_handler)
     else
-      Io::Flow::V0::Client.new(base_url, :authorization => auth)
+      Io::Flow::V0::Client.new(base_url, :authorization => auth, :http_handler => http_handler)
     end
   end
 
