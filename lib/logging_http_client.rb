@@ -1,5 +1,6 @@
 require 'time'
-class CustomHttpClient < ::Io::Flow::V0::HttpClient::DefaultHttpHandler
+
+class LoggingHttpClient < ::Io::Flow::V0::HttpClient::DefaultHttpHandler
 
   def execute(request)
     original_open = client.open_timeout
