@@ -39,7 +39,7 @@ module Io
           @base_url = URI(url)
           @authorization = HttpClient::Preconditions.assert_class_or_nil('authorization', opts.delete(:authorization), HttpClient::Authorization)
           @default_headers = HttpClient::Preconditions.assert_class('default_headers', opts.delete(:default_headers) || {}, Hash)
-          @http_handler = opts.delete(:http_handler) || HttpClient::HttpHandler
+          @http_handler = opts.delete(:http_handler) || HttpClient::DefaultHttpHandler.new
 
           HttpClient::Preconditions.assert_empty_opts(opts)
           HttpClient::Preconditions.check_state(url.match(/http.+/i), "URL[%s] must start with http" % url)
@@ -22977,12 +22977,8 @@ module Io
 
         class DefaultHttpHandler < HttpHandler
 
-          def initialize(base_uri)
-            @base_uri = Preconditions.assert_class('base_uri', base_uri, URI)
-          end
-
-          def instance(path)
-            DefaultHttpHandlerInstance.new(@base_uri)
+          def instance(base_uri, path)
+            DefaultHttpHandlerInstance.new(base_uri)
           end
 
         end
@@ -23015,12 +23011,11 @@ module Io
             end
           end
 
-          private
           def full_uri(path)
             File.join(@base_uri.to_s, path)
           end
 
-          # If HTTPS is required, this method accepts an HTTP Client and configures SSL
+          # Called to configure SSL if the base uri requires it
           def configure_ssl
             @client.use_ssl = true
             @client.verify_mode = OpenSSL::SSL::VERIFY_PEER
