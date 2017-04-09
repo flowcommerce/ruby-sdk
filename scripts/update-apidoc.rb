@@ -28,6 +28,8 @@ current = extract_version(path)
 system("cd %s && apidoc update" % File.join(dir, ".."))
 latest = extract_version(path)
 
+msg = []
+
 if current == latest
   diff = `git diff lib/flow_commerce/flow_api_v0_client.rb`.strip
   if diff.empty?
@@ -35,11 +37,12 @@ if current == latest
     puts ""
     exit(1)
   end
+  msg << "Update API Client Code"
+else
+  msg << "Update API version from %s to %s" % [current, latest]
+  msg << ""
+  msg << "  - See http://apidoc.me/history?org=flow&app=api&from=%s&to=%s" % [current, latest]
 end
 
-msg = "Update API version from %s to %s" % [current, latest]
-msg << ""
-msg << "  - See http://apidoc.me/history?org=flow&app=api&from=%s&to=%s" % [current, latest]
-
-system("git commit -m '%s' lib/flow_commerce/flow*rb" % msg)
+system("git commit -m '%s' lib/flow_commerce/flow*rb" % msg.join("\n"))
 
