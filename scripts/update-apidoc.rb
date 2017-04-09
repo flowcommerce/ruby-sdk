@@ -29,9 +29,12 @@ system("cd %s && apidoc update" % File.join(dir, ".."))
 latest = extract_version(path)
 
 if current == latest
-  puts "apidoc API version remains at %s" % current
-  puts ""
-  exit(1)
+  diff = `git diff lib/flow_commerce/flow_api_v0_client.rb`.strip
+  if diff.empty?
+    puts "apidoc API version remains at %s" % current
+    puts ""
+    exit(1)
+  end
 end
 
 msg = "Update API version from %s to %s" % [current, latest]
