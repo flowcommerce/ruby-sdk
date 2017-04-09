@@ -2135,7 +2135,7 @@ module Io
             HttpClient::Preconditions.assert_class('organization', organization, String)
             opts = HttpClient::Helper.symbolize_keys(incoming)
             query = {
-              :id => (x = opts.delete(:id); x.nil? ? nil : HttpClient::Preconditions.assert_class('id', x, Array).map { |v| HttpClient::Preconditions.assert_class('id', v, String) }),
+              :id => (x = opts.delete(:id); x.nil? ? nil : HttpClient::Preconditions.assert_class('id', x, Array).map { |v| HttpClient::Preconditions.assert_class('id', v, Integer) }),
               :authorization_id => (x = opts.delete(:authorization_id); x.nil? ? nil : HttpClient::Preconditions.assert_class('authorization_id', x, Array).map { |v| HttpClient::Preconditions.assert_class('authorization_id', v, String) }),
               :limit => HttpClient::Preconditions.assert_class('limit', (x = opts.delete(:limit); x.nil? ? 25 : x), Integer),
               :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
