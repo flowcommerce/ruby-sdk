@@ -25906,7 +25906,7 @@ module Io
             response = begin
                          @client.request(request)
                        rescue SocketError => e
-                         raise Exception.new("Error accessing uri[#{full_uri(request.path)}]: #{e}")
+                         raise StandardError.new("Error accessing uri[#{full_uri(request.path)}]: #{e}")
                        end
 
             case response
@@ -26108,7 +26108,7 @@ module Io
 
         end
 
-        class PreconditionException < Exception
+        class PreconditionException < StandardError
 
           attr_reader :message
 
