@@ -428,7 +428,7 @@ module Io
           # Add attribute
           def post(organization, attribute_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('attribute_form', attribute_form, ::Io::Flow::V0::Models::AttributeForm)
+            (x = attribute_form; x.is_a?(::Io::Flow::V0::Models::AttributeForm) ? x : ::Io::Flow::V0::Models::AttributeForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/attributes").with_json(attribute_form.to_json).post
             ::Io::Flow::V0::Models::Attribute.new(r)
           end
@@ -445,7 +445,7 @@ module Io
           def put_by_key(organization, key, attribute_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('attribute_form', attribute_form, ::Io::Flow::V0::Models::AttributeForm)
+            (x = attribute_form; x.is_a?(::Io::Flow::V0::Models::AttributeForm) ? x : ::Io::Flow::V0::Models::AttributeForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/attributes/#{CGI.escape(key)}").with_json(attribute_form.to_json).put
             ::Io::Flow::V0::Models::Attribute.new(r)
           end
@@ -566,7 +566,7 @@ module Io
           # Add experience
           def post(organization, experience_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('experience_form', experience_form, ::Io::Flow::V0::Models::ExperienceForm)
+            (x = experience_form; x.is_a?(::Io::Flow::V0::Models::ExperienceForm) ? x : ::Io::Flow::V0::Models::ExperienceForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/experiences").with_json(experience_form.to_json).post
             ::Io::Flow::V0::Models::Experience.new(r)
           end
@@ -588,7 +588,7 @@ module Io
           def post_margins_by_experience_key(organization, experience_key, item_margin_post_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('experience_key', experience_key, String)
-            HttpClient::Preconditions.assert_class('item_margin_post_form', item_margin_post_form, ::Io::Flow::V0::Models::ItemMarginPostForm)
+            (x = item_margin_post_form; x.is_a?(::Io::Flow::V0::Models::ItemMarginPostForm) ? x : ::Io::Flow::V0::Models::ItemMarginPostForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(experience_key)}/margins").with_json(item_margin_post_form.to_json).post
             ::Io::Flow::V0::Models::ItemMargin.new(r)
           end
@@ -605,7 +605,7 @@ module Io
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('experience_key', experience_key, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('item_margin_put_form', item_margin_put_form, ::Io::Flow::V0::Models::ItemMarginPutForm)
+            (x = item_margin_put_form; x.is_a?(::Io::Flow::V0::Models::ItemMarginPutForm) ? x : ::Io::Flow::V0::Models::ItemMarginPutForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(experience_key)}/margins/#{CGI.escape(key)}").with_json(item_margin_put_form.to_json).put
             ::Io::Flow::V0::Models::ItemMargin.new(r)
           end
@@ -652,7 +652,7 @@ module Io
           def put_payment_method_rules_by_experience_key(organization, experience_key, experience_payment_method_rule_forms)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('experience_key', experience_key, String)
-            HttpClient::Preconditions.assert_collection_of_class('experience_payment_method_rule_forms', experience_payment_method_rule_forms, ::Io::Flow::V0::Models::ExperiencePaymentMethodRuleForm)
+            HttpClient::Preconditions.assert_class('experience_payment_method_rule_forms', experience_payment_method_rule_forms, Array).map { |v| (x = v; x.is_a?(::Io::Flow::V0::Models::ExperiencePaymentMethodRuleForm) ? x : ::Io::Flow::V0::Models::ExperiencePaymentMethodRuleForm.new(x)) }
             r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(experience_key)}/payment-method-rules").with_json(experience_payment_method_rule_forms.map { |o| o.to_hash }.to_json).put
             r.map { |x| ::Io::Flow::V0::Models::PaymentMethodRule.new(x) }
           end
@@ -681,7 +681,7 @@ module Io
           def put_by_key(organization, key, experience_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('experience_form', experience_form, ::Io::Flow::V0::Models::ExperienceForm)
+            (x = experience_form; x.is_a?(::Io::Flow::V0::Models::ExperienceForm) ? x : ::Io::Flow::V0::Models::ExperienceForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(key)}").with_json(experience_form.to_json).put
             ::Io::Flow::V0::Models::Experience.new(r)
           end
@@ -716,7 +716,7 @@ module Io
           def put_pricing_by_key(organization, key, pricing)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('pricing', pricing, ::Io::Flow::V0::Models::Pricing)
+            (x = pricing; x.is_a?(::Io::Flow::V0::Models::Pricing) ? x : ::Io::Flow::V0::Models::Pricing.new(x))
             r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(key)}/pricing").with_json(pricing.to_json).put
             ::Io::Flow::V0::Models::Pricing.new(r)
           end
@@ -844,7 +844,7 @@ module Io
           # Add catalog item(s)
           def post(organization, item_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('item_form', item_form, ::Io::Flow::V0::Models::ItemForm)
+            (x = item_form; x.is_a?(::Io::Flow::V0::Models::ItemForm) ? x : ::Io::Flow::V0::Models::ItemForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/items").with_json(item_form.to_json).post
             ::Io::Flow::V0::Models::Item.new(r)
           end
@@ -861,7 +861,7 @@ module Io
           def put_by_number(organization, number, item_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('number', number, String)
-            HttpClient::Preconditions.assert_class('item_form', item_form, ::Io::Flow::V0::Models::ItemForm)
+            (x = item_form; x.is_a?(::Io::Flow::V0::Models::ItemForm) ? x : ::Io::Flow::V0::Models::ItemForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/items/#{CGI.escape(number)}").with_json(item_form.to_json).put
             ::Io::Flow::V0::Models::Item.new(r)
           end
@@ -928,7 +928,7 @@ module Io
               :language => (x = opts.delete(:language); x.nil? ? nil : HttpClient::Preconditions.assert_class('language', x, String)),
               :expand => (x = opts.delete(:expand); x.nil? ? nil : HttpClient::Preconditions.assert_class('expand', x, Array).map { |v| HttpClient::Preconditions.assert_class('expand', v, String) })
             }.delete_if { |k, v| v.nil? }
-            HttpClient::Preconditions.assert_class('order_form', order_form, ::Io::Flow::V0::Models::OrderForm)
+            (x = order_form; x.is_a?(::Io::Flow::V0::Models::OrderForm) ? x : ::Io::Flow::V0::Models::OrderForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/orders").with_query(query).with_json(order_form.to_json).post
             ::Io::Flow::V0::Models::Order.new(r)
           end
@@ -960,7 +960,7 @@ module Io
               :language => (x = opts.delete(:language); x.nil? ? nil : HttpClient::Preconditions.assert_class('language', x, String)),
               :expand => (x = opts.delete(:expand); x.nil? ? nil : HttpClient::Preconditions.assert_class('expand', x, Array).map { |v| HttpClient::Preconditions.assert_class('expand', v, String) })
             }.delete_if { |k, v| v.nil? }
-            HttpClient::Preconditions.assert_class('order_put_form', order_put_form, ::Io::Flow::V0::Models::OrderPutForm)
+            (x = order_put_form; x.is_a?(::Io::Flow::V0::Models::OrderPutForm) ? x : ::Io::Flow::V0::Models::OrderPutForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/orders/#{CGI.escape(number)}").with_query(query).with_json(order_put_form.to_json).put
             ::Io::Flow::V0::Models::Order.new(r)
           end
@@ -1035,7 +1035,7 @@ module Io
               :currency => (x = opts.delete(:currency); x.nil? ? nil : HttpClient::Preconditions.assert_class('currency', x, String)),
               :language => (x = opts.delete(:language); x.nil? ? nil : HttpClient::Preconditions.assert_class('language', x, String))
             }.delete_if { |k, v| v.nil? }
-            HttpClient::Preconditions.assert_class('order_estimate_form', order_estimate_form, ::Io::Flow::V0::Models::OrderEstimateForm)
+            (x = order_estimate_form; x.is_a?(::Io::Flow::V0::Models::OrderEstimateForm) ? x : ::Io::Flow::V0::Models::OrderEstimateForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/order-estimates").with_query(query).with_json(order_estimate_form.to_json).post
             ::Io::Flow::V0::Models::OrderEstimate.new(r)
           end
@@ -1058,7 +1058,7 @@ module Io
               :currency => (x = opts.delete(:currency); x.nil? ? nil : HttpClient::Preconditions.assert_class('currency', x, String)),
               :language => (x = opts.delete(:language); x.nil? ? nil : HttpClient::Preconditions.assert_class('language', x, String))
             }.delete_if { |k, v| v.nil? }
-            HttpClient::Preconditions.assert_class('order_estimate_form', order_estimate_form, ::Io::Flow::V0::Models::OrderEstimateForm)
+            (x = order_estimate_form; x.is_a?(::Io::Flow::V0::Models::OrderEstimateForm) ? x : ::Io::Flow::V0::Models::OrderEstimateForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/order-estimates/#{CGI.escape(id)}").with_query(query).with_json(order_estimate_form.to_json).put
             ::Io::Flow::V0::Models::OrderEstimate.new(r)
           end
@@ -1088,7 +1088,7 @@ module Io
 
           def post(organization, order_identifier_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('order_identifier_form', order_identifier_form, ::Io::Flow::V0::Models::OrderIdentifierForm)
+            (x = order_identifier_form; x.is_a?(::Io::Flow::V0::Models::OrderIdentifierForm) ? x : ::Io::Flow::V0::Models::OrderIdentifierForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/order-identifiers").with_json(order_identifier_form.to_json).post
             ::Io::Flow::V0::Models::OrderIdentifier.new(r)
           end
@@ -1103,7 +1103,7 @@ module Io
           def put_by_number(organization, number, order_identifier_put_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('number', number, String)
-            HttpClient::Preconditions.assert_class('order_identifier_put_form', order_identifier_put_form, ::Io::Flow::V0::Models::OrderIdentifierPutForm)
+            (x = order_identifier_put_form; x.is_a?(::Io::Flow::V0::Models::OrderIdentifierPutForm) ? x : ::Io::Flow::V0::Models::OrderIdentifierPutForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/order-identifiers/#{CGI.escape(number)}").with_json(order_identifier_put_form.to_json).put
             ::Io::Flow::V0::Models::OrderIdentifier.new(r)
           end
@@ -1178,7 +1178,7 @@ module Io
 
           # Create a new organization.
           def post(organization_form)
-            HttpClient::Preconditions.assert_class('organization_form', organization_form, ::Io::Flow::V0::Models::OrganizationForm)
+            (x = organization_form; x.is_a?(::Io::Flow::V0::Models::OrganizationForm) ? x : ::Io::Flow::V0::Models::OrganizationForm.new(x))
             r = @client.request("/organizations").with_json(organization_form.to_json).post
             ::Io::Flow::V0::Models::Organization.new(r)
           end
@@ -1193,7 +1193,7 @@ module Io
           # Update or create an organization with the specified id.
           def put_by_id(id, organization_put_form)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('organization_put_form', organization_put_form, ::Io::Flow::V0::Models::OrganizationPutForm)
+            (x = organization_put_form; x.is_a?(::Io::Flow::V0::Models::OrganizationPutForm) ? x : ::Io::Flow::V0::Models::OrganizationPutForm.new(x))
             r = @client.request("/organizations/#{CGI.escape(id)}").with_json(organization_put_form.to_json).put
             ::Io::Flow::V0::Models::Organization.new(r)
           end
@@ -1236,7 +1236,7 @@ module Io
 
           def post_validations(organization, values)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_collection_of_class('strings', strings, ::Io::Flow::V0::Models::String)
+            HttpClient::Preconditions.assert_class('strings', strings, Array).map { |v| HttpClient::Preconditions.assert_class('strings', v, String) }
             r = @client.request("/#{CGI.escape(organization)}/query/validations").with_json(strings.to_json).post
             ::Io::Flow::V0::Models::QueryValidation.new(r)
           end
@@ -1266,7 +1266,7 @@ module Io
           # Add subcatalog
           def post(organization, subcatalog_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('subcatalog_form', subcatalog_form, ::Io::Flow::V0::Models::SubcatalogForm)
+            (x = subcatalog_form; x.is_a?(::Io::Flow::V0::Models::SubcatalogForm) ? x : ::Io::Flow::V0::Models::SubcatalogForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs").with_json(subcatalog_form.to_json).post
             ::Io::Flow::V0::Models::Subcatalog.new(r)
           end
@@ -1283,7 +1283,7 @@ module Io
           def put_by_id(organization, id, subcatalog_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('subcatalog_form', subcatalog_form, ::Io::Flow::V0::Models::SubcatalogForm)
+            (x = subcatalog_form; x.is_a?(::Io::Flow::V0::Models::SubcatalogForm) ? x : ::Io::Flow::V0::Models::SubcatalogForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}").with_json(subcatalog_form.to_json).put
             ::Io::Flow::V0::Models::Subcatalog.new(r)
           end
@@ -1308,7 +1308,7 @@ module Io
           def put_settings_by_id(organization, id, subcatalog_settings_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('subcatalog_settings_form', subcatalog_settings_form, ::Io::Flow::V0::Models::SubcatalogSettingsForm)
+            (x = subcatalog_settings_form; x.is_a?(::Io::Flow::V0::Models::SubcatalogSettingsForm) ? x : ::Io::Flow::V0::Models::SubcatalogSettingsForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(id)}/settings").with_json(subcatalog_settings_form.to_json).put
             ::Io::Flow::V0::Models::SubcatalogSettings.new(r)
           end
@@ -1376,7 +1376,7 @@ module Io
           def post_functions_by_subcatalog_id(organization, subcatalog_id, subcatalog_function_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('subcatalog_id', subcatalog_id, String)
-            HttpClient::Preconditions.assert_class('subcatalog_function_form', subcatalog_function_form, ::Io::Flow::V0::Models::SubcatalogFunctionForm)
+            (x = subcatalog_function_form; x.is_a?(::Io::Flow::V0::Models::SubcatalogFunctionForm) ? x : ::Io::Flow::V0::Models::SubcatalogFunctionForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog_id)}/functions").with_json(subcatalog_function_form.to_json).post
             ::Io::Flow::V0::Models::SubcatalogFunction.new(r)
           end
@@ -1479,7 +1479,7 @@ module Io
           def post_queries_by_subcatalog_id(organization, subcatalog_id, query_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('subcatalog_id', subcatalog_id, String)
-            HttpClient::Preconditions.assert_class('query_form', query_form, ::Io::Flow::V0::Models::QueryForm)
+            (x = query_form; x.is_a?(::Io::Flow::V0::Models::QueryForm) ? x : ::Io::Flow::V0::Models::QueryForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/subcatalogs/#{CGI.escape(subcatalog_id)}/queries").with_json(query_form.to_json).post
             ::Io::Flow::V0::Models::Query.new(r)
           end
@@ -1599,7 +1599,7 @@ module Io
 
           def post(organization, targeting_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('targeting_form', targeting_form, ::Io::Flow::V0::Models::TargetingForm)
+            (x = targeting_form; x.is_a?(::Io::Flow::V0::Models::TargetingForm) ? x : ::Io::Flow::V0::Models::TargetingForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/targetings").with_json(targeting_form.to_json).post
             ::Io::Flow::V0::Models::Targeting.new(r)
           end
@@ -1614,7 +1614,7 @@ module Io
           def put_by_key(organization, key, targeting_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('targeting_form', targeting_form, ::Io::Flow::V0::Models::TargetingForm)
+            (x = targeting_form; x.is_a?(::Io::Flow::V0::Models::TargetingForm) ? x : ::Io::Flow::V0::Models::TargetingForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/catalog/targetings/#{CGI.escape(key)}").with_json(targeting_form.to_json).put
             ::Io::Flow::V0::Models::Targeting.new(r)
           end
@@ -1689,7 +1689,7 @@ module Io
           # Create item function
           def post(organization, item_function_post_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('item_function_post_form', item_function_post_form, ::Io::Flow::V0::Models::ItemFunctionPostForm)
+            (x = item_function_post_form; x.is_a?(::Io::Flow::V0::Models::ItemFunctionPostForm) ? x : ::Io::Flow::V0::Models::ItemFunctionPostForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/item-functions").with_json(item_function_post_form.to_json).post
             ::Io::Flow::V0::Models::ItemFunction.new(r)
           end
@@ -1706,7 +1706,7 @@ module Io
           def put_by_key(organization, key, item_function_put_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('item_function_put_form', item_function_put_form, ::Io::Flow::V0::Models::ItemFunctionPutForm)
+            (x = item_function_put_form; x.is_a?(::Io::Flow::V0::Models::ItemFunctionPutForm) ? x : ::Io::Flow::V0::Models::ItemFunctionPutForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/item-functions/#{CGI.escape(key)}").with_json(item_function_put_form.to_json).put
             ::Io::Flow::V0::Models::ItemFunction.new(r)
           end
@@ -1760,7 +1760,7 @@ module Io
           # Create organization currency settings.
           def post(organization, organization_currency_setting_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('organization_currency_setting_form', organization_currency_setting_form, ::Io::Flow::V0::Models::OrganizationCurrencySettingForm)
+            (x = organization_currency_setting_form; x.is_a?(::Io::Flow::V0::Models::OrganizationCurrencySettingForm) ? x : ::Io::Flow::V0::Models::OrganizationCurrencySettingForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/currency/settings").with_json(organization_currency_setting_form.to_json).post
             ::Io::Flow::V0::Models::OrganizationCurrencySetting.new(r)
           end
@@ -1776,7 +1776,7 @@ module Io
           def put_by_id(organization, id, organization_currency_setting_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('organization_currency_setting_form', organization_currency_setting_form, ::Io::Flow::V0::Models::OrganizationCurrencySettingForm)
+            (x = organization_currency_setting_form; x.is_a?(::Io::Flow::V0::Models::OrganizationCurrencySettingForm) ? x : ::Io::Flow::V0::Models::OrganizationCurrencySettingForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/currency/settings/#{CGI.escape(id)}").with_json(organization_currency_setting_form.to_json).put
             ::Io::Flow::V0::Models::OrganizationCurrencySetting.new(r)
           end
@@ -1859,7 +1859,7 @@ module Io
 
           def put(organization, harmonization_settings_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('harmonization_settings_form', harmonization_settings_form, ::Io::Flow::V0::Models::HarmonizationSettingsForm)
+            (x = harmonization_settings_form; x.is_a?(::Io::Flow::V0::Models::HarmonizationSettingsForm) ? x : ::Io::Flow::V0::Models::HarmonizationSettingsForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/harmonization/settings").with_json(harmonization_settings_form.to_json).put
             ::Io::Flow::V0::Models::HarmonizationSettings.new(r)
           end
@@ -1909,7 +1909,7 @@ module Io
 
           def post(organization, harmonized_item_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('harmonized_item_form', harmonized_item_form, ::Io::Flow::V0::Models::HarmonizedItemForm)
+            (x = harmonized_item_form; x.is_a?(::Io::Flow::V0::Models::HarmonizedItemForm) ? x : ::Io::Flow::V0::Models::HarmonizedItemForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/harmonization/items").with_json(harmonized_item_form.to_json).post
             ::Io::Flow::V0::Models::HarmonizedItem.new(r)
           end
@@ -1925,7 +1925,7 @@ module Io
           def put_by_number(organization, number, harmonized_item_put_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('number', number, String)
-            HttpClient::Preconditions.assert_class('harmonized_item_put_form', harmonized_item_put_form, ::Io::Flow::V0::Models::HarmonizedItemPutForm)
+            (x = harmonized_item_put_form; x.is_a?(::Io::Flow::V0::Models::HarmonizedItemPutForm) ? x : ::Io::Flow::V0::Models::HarmonizedItemPutForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/harmonization/items/#{CGI.escape(number)}").with_json(harmonized_item_put_form.to_json).put
             ::Io::Flow::V0::Models::HarmonizedItem.new(r)
           end
@@ -1978,7 +1978,7 @@ module Io
 
           def post(organization, harmonized_item_duty_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('harmonized_item_duty_form', harmonized_item_duty_form, ::Io::Flow::V0::Models::HarmonizedItemDutyForm)
+            (x = harmonized_item_duty_form; x.is_a?(::Io::Flow::V0::Models::HarmonizedItemDutyForm) ? x : ::Io::Flow::V0::Models::HarmonizedItemDutyForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/harmonization/item-duties").with_json(harmonized_item_duty_form.to_json).post
             ::Io::Flow::V0::Models::HarmonizedItemDuty.new(r)
           end
@@ -2026,7 +2026,7 @@ module Io
           # collection of items
           def post(organization, harmonized_landed_cost_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('harmonized_landed_cost_form', harmonized_landed_cost_form, ::Io::Flow::V0::Models::HarmonizedLandedCostForm)
+            (x = harmonized_landed_cost_form; x.is_a?(::Io::Flow::V0::Models::HarmonizedLandedCostForm) ? x : ::Io::Flow::V0::Models::HarmonizedLandedCostForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/harmonization/landed-costs").with_json(harmonized_landed_cost_form.to_json).post
             ::Io::Flow::V0::Models::HarmonizedLandedCost.new(r)
           end
@@ -2170,7 +2170,7 @@ module Io
             query = {
               :expand => (x = opts.delete(:expand); x.nil? ? nil : HttpClient::Preconditions.assert_class('expand', x, Array).map { |v| HttpClient::Preconditions.assert_class('expand', v, String) })
             }.delete_if { |k, v| v.nil? }
-            HttpClient::Preconditions.assert_class('authorization_form', authorization_form, ::Io::Flow::V0::Models::AuthorizationForm)
+            (x = authorization_form; x.is_a?(::Io::Flow::V0::Models::AuthorizationForm) ? x : ::Io::Flow::V0::Models::AuthorizationForm.from_json(x))
             r = @client.request("/#{CGI.escape(organization)}/authorizations").with_query(query).with_json(authorization_form.to_json).post
             ::Io::Flow::V0::Models::Authorization.from_json(r)
           end
@@ -2238,7 +2238,7 @@ module Io
           # Create a new capture.
           def post(organization, capture_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('capture_form', capture_form, ::Io::Flow::V0::Models::CaptureForm)
+            (x = capture_form; x.is_a?(::Io::Flow::V0::Models::CaptureForm) ? x : ::Io::Flow::V0::Models::CaptureForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/captures").with_json(capture_form.to_json).post
             ::Io::Flow::V0::Models::Capture.new(r)
           end
@@ -2292,7 +2292,7 @@ module Io
           # need to authenticate.
           def post(organization, card_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('card_form', card_form, ::Io::Flow::V0::Models::CardForm)
+            (x = card_form; x.is_a?(::Io::Flow::V0::Models::CardForm) ? x : ::Io::Flow::V0::Models::CardForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/cards").with_json(card_form.to_json).post
             ::Io::Flow::V0::Models::Card.new(r)
           end
@@ -2318,7 +2318,7 @@ module Io
           # exchanged.
           def post_nonces(organization, card_nonce_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('card_nonce_form', card_nonce_form, ::Io::Flow::V0::Models::CardNonceForm)
+            (x = card_nonce_form; x.is_a?(::Io::Flow::V0::Models::CardNonceForm) ? x : ::Io::Flow::V0::Models::CardNonceForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/cards/nonces").with_json(card_nonce_form.to_json).post
             ::Io::Flow::V0::Models::Card.new(r)
           end
@@ -2365,7 +2365,7 @@ module Io
           # not need to authenticate.
           def post(organization, payment_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('payment_form', payment_form, ::Io::Flow::V0::Models::PaymentForm)
+            (x = payment_form; x.is_a?(::Io::Flow::V0::Models::PaymentForm) ? x : ::Io::Flow::V0::Models::PaymentForm.from_json(x))
             r = @client.request("/#{CGI.escape(organization)}/payments").with_json(payment_form.to_json).post
             ::Io::Flow::V0::Models::Payment.from_json(r)
           end
@@ -2459,7 +2459,7 @@ module Io
           # Create a new refund.
           def post(organization, refund_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('refund_form', refund_form, ::Io::Flow::V0::Models::RefundForm)
+            (x = refund_form; x.is_a?(::Io::Flow::V0::Models::RefundForm) ? x : ::Io::Flow::V0::Models::RefundForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/refunds").with_json(refund_form.to_json).post
             ::Io::Flow::V0::Models::Refund.new(r)
           end
@@ -2519,7 +2519,7 @@ module Io
 
           def post(organization, center_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('center_form', center_form, ::Io::Flow::V0::Models::CenterForm)
+            (x = center_form; x.is_a?(::Io::Flow::V0::Models::CenterForm) ? x : ::Io::Flow::V0::Models::CenterForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/centers").with_json(center_form.to_json).post
             ::Io::Flow::V0::Models::Center.new(r)
           end
@@ -2534,7 +2534,7 @@ module Io
           def put_by_key(organization, key, center_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('center_form', center_form, ::Io::Flow::V0::Models::CenterForm)
+            (x = center_form; x.is_a?(::Io::Flow::V0::Models::CenterForm) ? x : ::Io::Flow::V0::Models::CenterForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/centers/#{CGI.escape(key)}").with_json(center_form.to_json).put
             ::Io::Flow::V0::Models::Center.new(r)
           end
@@ -2606,7 +2606,7 @@ module Io
 
           def post(organization, inventory_rule_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('inventory_rule_form', inventory_rule_form, ::Io::Flow::V0::Models::InventoryRuleForm)
+            (x = inventory_rule_form; x.is_a?(::Io::Flow::V0::Models::InventoryRuleForm) ? x : ::Io::Flow::V0::Models::InventoryRuleForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/inventory_rules").with_json(inventory_rule_form.to_json).post
             ::Io::Flow::V0::Models::InventoryRule.new(r)
           end
@@ -2693,7 +2693,7 @@ module Io
 
           def post(organization, inventory_update_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('inventory_update_form', inventory_update_form, ::Io::Flow::V0::Models::InventoryUpdateForm)
+            (x = inventory_update_form; x.is_a?(::Io::Flow::V0::Models::InventoryUpdateForm) ? x : ::Io::Flow::V0::Models::InventoryUpdateForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/inventory_updates").with_json(inventory_update_form.to_json).post
             ::Io::Flow::V0::Models::InventoryUpdate.new(r)
           end
@@ -2743,7 +2743,7 @@ module Io
 
           def post(organization, quote_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('quote_form', quote_form, ::Io::Flow::V0::Models::QuoteForm)
+            (x = quote_form; x.is_a?(::Io::Flow::V0::Models::QuoteForm) ? x : ::Io::Flow::V0::Models::QuoteForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/quotes").with_json(quote_form.to_json).post
             ::Io::Flow::V0::Models::Quote.new(r)
           end
@@ -2797,7 +2797,7 @@ module Io
 
           def post(organization, return_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('return_form', return_form, ::Io::Flow::V0::Models::ReturnForm)
+            (x = return_form; x.is_a?(::Io::Flow::V0::Models::ReturnForm) ? x : ::Io::Flow::V0::Models::ReturnForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/returns").with_json(return_form.to_json).post
             ::Io::Flow::V0::Models::Return.new(r)
           end
@@ -2812,7 +2812,7 @@ module Io
           def put_by_key(organization, key, return_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('return_form', return_form, ::Io::Flow::V0::Models::ReturnForm)
+            (x = return_form; x.is_a?(::Io::Flow::V0::Models::ReturnForm) ? x : ::Io::Flow::V0::Models::ReturnForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/returns/#{CGI.escape(key)}").with_json(return_form.to_json).put
             ::Io::Flow::V0::Models::Return.new(r)
           end
@@ -2865,7 +2865,7 @@ module Io
 
           def post(organization, shipping_label_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('shipping_label_form', shipping_label_form, ::Io::Flow::V0::Models::ShippingLabelForm)
+            (x = shipping_label_form; x.is_a?(::Io::Flow::V0::Models::ShippingLabelForm) ? x : ::Io::Flow::V0::Models::ShippingLabelForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/shipping_labels").with_json(shipping_label_form.to_json).post
             ::Io::Flow::V0::Models::ShippingLabel.new(r)
           end
@@ -2919,7 +2919,7 @@ module Io
 
           def post(organization, shipping_notification_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('shipping_notification_form', shipping_notification_form, ::Io::Flow::V0::Models::ShippingNotificationForm)
+            (x = shipping_notification_form; x.is_a?(::Io::Flow::V0::Models::ShippingNotificationForm) ? x : ::Io::Flow::V0::Models::ShippingNotificationForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/shipping-notifications").with_json(shipping_notification_form.to_json).post
             ::Io::Flow::V0::Models::ShippingNotification.new(r)
           end
@@ -2934,7 +2934,7 @@ module Io
           def put_by_key(organization, key, shipping_notification_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('key', key, String)
-            HttpClient::Preconditions.assert_class('shipping_notification_form', shipping_notification_form, ::Io::Flow::V0::Models::ShippingNotificationForm)
+            (x = shipping_notification_form; x.is_a?(::Io::Flow::V0::Models::ShippingNotificationForm) ? x : ::Io::Flow::V0::Models::ShippingNotificationForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/shipping-notifications/#{CGI.escape(key)}").with_json(shipping_notification_form.to_json).put
             ::Io::Flow::V0::Models::ShippingNotification.new(r)
           end
@@ -2984,7 +2984,7 @@ module Io
 
           def post(organization, tier_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('tier_form', tier_form, ::Io::Flow::V0::Models::TierForm)
+            (x = tier_form; x.is_a?(::Io::Flow::V0::Models::TierForm) ? x : ::Io::Flow::V0::Models::TierForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/tiers").with_json(tier_form.to_json).post
             ::Io::Flow::V0::Models::Tier.new(r)
           end
@@ -2999,7 +2999,7 @@ module Io
           def put_by_id(organization, id, tier_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('tier_form', tier_form, ::Io::Flow::V0::Models::TierForm)
+            (x = tier_form; x.is_a?(::Io::Flow::V0::Models::TierForm) ? x : ::Io::Flow::V0::Models::TierForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/tiers/#{CGI.escape(id)}").with_json(tier_form.to_json).put
             ::Io::Flow::V0::Models::Tier.new(r)
           end
@@ -3049,7 +3049,7 @@ module Io
 
           def post(organization, tier_default_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('tier_default_form', tier_default_form, ::Io::Flow::V0::Models::TierDefaultForm)
+            (x = tier_default_form; x.is_a?(::Io::Flow::V0::Models::TierDefaultForm) ? x : ::Io::Flow::V0::Models::TierDefaultForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/tier_defaults").with_json(tier_default_form.to_json).post
             ::Io::Flow::V0::Models::TierDefault.new(r)
           end
@@ -3100,7 +3100,7 @@ module Io
           def post(organization, tier_id, tier_rule_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('tier_id', tier_id, String)
-            HttpClient::Preconditions.assert_class('tier_rule_form', tier_rule_form, ::Io::Flow::V0::Models::TierRuleForm)
+            (x = tier_rule_form; x.is_a?(::Io::Flow::V0::Models::TierRuleForm) ? x : ::Io::Flow::V0::Models::TierRuleForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/tiers/#{CGI.escape(tier_id)}/rules").with_json(tier_rule_form.to_json).post
             ::Io::Flow::V0::Models::TierRule.new(r)
           end
@@ -3117,7 +3117,7 @@ module Io
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('tier_id', tier_id, String)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('tier_rule_form', tier_rule_form, ::Io::Flow::V0::Models::TierRuleForm)
+            (x = tier_rule_form; x.is_a?(::Io::Flow::V0::Models::TierRuleForm) ? x : ::Io::Flow::V0::Models::TierRuleForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/tiers/#{CGI.escape(tier_id)}/rules/#{CGI.escape(id)}").with_json(tier_rule_form.to_json).put
             ::Io::Flow::V0::Models::TierRule.new(r)
           end
@@ -3168,7 +3168,7 @@ module Io
 
           def post_trackings_by_organization(organization, tracking_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('tracking_form', tracking_form, ::Io::Flow::V0::Models::TrackingForm)
+            (x = tracking_form; x.is_a?(::Io::Flow::V0::Models::TrackingForm) ? x : ::Io::Flow::V0::Models::TrackingForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/trackings").with_json(tracking_form.to_json).post
             ::Io::Flow::V0::Models::Tracking.new(r)
           end
@@ -3263,7 +3263,7 @@ module Io
 
           def post(organization, tracking_label_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('tracking_label_form', tracking_label_form, ::Io::Flow::V0::Models::TrackingLabelForm)
+            (x = tracking_label_form; x.is_a?(::Io::Flow::V0::Models::TrackingLabelForm) ? x : ::Io::Flow::V0::Models::TrackingLabelForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/tracking-labels").with_json(tracking_label_form.to_json).post
             ::Io::Flow::V0::Models::TrackingLabel.new(r)
           end
@@ -3314,7 +3314,7 @@ module Io
           # Create a new webhook
           def post(organization, webhook_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('webhook_form', webhook_form, ::Io::Flow::V0::Models::WebhookForm)
+            (x = webhook_form; x.is_a?(::Io::Flow::V0::Models::WebhookForm) ? x : ::Io::Flow::V0::Models::WebhookForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/webhooks").with_json(webhook_form.to_json).post
             ::Io::Flow::V0::Models::Webhook.new(r)
           end
@@ -3331,7 +3331,7 @@ module Io
           def put_by_id(organization, id, webhook_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('webhook_form', webhook_form, ::Io::Flow::V0::Models::WebhookForm)
+            (x = webhook_form; x.is_a?(::Io::Flow::V0::Models::WebhookForm) ? x : ::Io::Flow::V0::Models::WebhookForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/webhooks/#{CGI.escape(id)}").with_json(webhook_form.to_json).put
             ::Io::Flow::V0::Models::Webhook.new(r)
           end
@@ -3354,7 +3354,7 @@ module Io
           # Updates the webhook settings for an organization
           def put_settings(organization, webhook_settings)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('webhook_settings', webhook_settings, ::Io::Flow::V0::Models::WebhookSettings)
+            (x = webhook_settings; x.is_a?(::Io::Flow::V0::Models::WebhookSettings) ? x : ::Io::Flow::V0::Models::WebhookSettings.new(x))
             r = @client.request("/#{CGI.escape(organization)}/webhooks/settings").with_json(webhook_settings.to_json).put
             ::Io::Flow::V0::Models::WebhookSettings.new(r)
           end
@@ -3421,7 +3421,7 @@ module Io
           end
 
           def post_verifications(address)
-            HttpClient::Preconditions.assert_class('address', address, ::Io::Flow::V0::Models::Address)
+            (x = address; x.is_a?(::Io::Flow::V0::Models::Address) ? x : ::Io::Flow::V0::Models::Address.new(x))
             r = @client.request("/addresses/verifications").with_json(address.to_json).post
             ::Io::Flow::V0::Models::AddressVerification.new(r)
           end
@@ -3706,7 +3706,7 @@ module Io
           # Create an export.
           def post(organization, export_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('export_form', export_form, ::Io::Flow::V0::Models::ExportForm)
+            (x = export_form; x.is_a?(::Io::Flow::V0::Models::ExportForm) ? x : ::Io::Flow::V0::Models::ExportForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/exports").with_json(export_form.to_json).post
             ::Io::Flow::V0::Models::Export.new(r)
           end
@@ -3771,7 +3771,7 @@ module Io
 
           def post_catalog(organization, catalog_feed_form_post)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('catalog_feed_form_post', catalog_feed_form_post, ::Io::Flow::V0::Models::CatalogFeedFormPost)
+            (x = catalog_feed_form_post; x.is_a?(::Io::Flow::V0::Models::CatalogFeedFormPost) ? x : ::Io::Flow::V0::Models::CatalogFeedFormPost.new(x))
             r = @client.request("/#{CGI.escape(organization)}/feeds/catalog").with_json(catalog_feed_form_post.to_json).post
             ::Io::Flow::V0::Models::CatalogFeed.new(r)
           end
@@ -3779,7 +3779,7 @@ module Io
           def put_catalog_by_id(organization, id, catalog_feed_form_put)
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('catalog_feed_form_put', catalog_feed_form_put, ::Io::Flow::V0::Models::CatalogFeedFormPut)
+            (x = catalog_feed_form_put; x.is_a?(::Io::Flow::V0::Models::CatalogFeedFormPut) ? x : ::Io::Flow::V0::Models::CatalogFeedFormPut.new(x))
             r = @client.request("/#{CGI.escape(organization)}/feeds/catalog/#{CGI.escape(id)}").with_json(catalog_feed_form_put.to_json).put
             ::Io::Flow::V0::Models::CatalogFeed.new(r)
           end
@@ -3824,7 +3824,7 @@ module Io
           # Create an import.
           def post(organization, import_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('import_form', import_form, ::Io::Flow::V0::Models::ImportForm)
+            (x = import_form; x.is_a?(::Io::Flow::V0::Models::ImportForm) ? x : ::Io::Flow::V0::Models::ImportForm.new(x))
             r = @client.request("/#{CGI.escape(organization)}/imports").with_json(import_form.to_json).post
             ::Io::Flow::V0::Models::Import.new(r)
           end
@@ -3886,7 +3886,7 @@ module Io
 
           # Create a new invitation.
           def post(invitation_form)
-            HttpClient::Preconditions.assert_class('invitation_form', invitation_form, ::Io::Flow::V0::Models::InvitationForm)
+            (x = invitation_form; x.is_a?(::Io::Flow::V0::Models::InvitationForm) ? x : ::Io::Flow::V0::Models::InvitationForm.new(x))
             r = @client.request("/invitations").with_json(invitation_form.to_json).post
             ::Io::Flow::V0::Models::Invitation.new(r)
           end
@@ -3987,7 +3987,7 @@ module Io
 
           # Create a new membership.
           def post(membership_form)
-            HttpClient::Preconditions.assert_class('membership_form', membership_form, ::Io::Flow::V0::Models::MembershipForm)
+            (x = membership_form; x.is_a?(::Io::Flow::V0::Models::MembershipForm) ? x : ::Io::Flow::V0::Models::MembershipForm.new(x))
             r = @client.request("/memberships").with_json(membership_form.to_json).post
             ::Io::Flow::V0::Models::Membership.new(r)
           end
@@ -4007,7 +4007,7 @@ module Io
           # the specified role within the organization, does nothing.
           def put_by_id(id, membership_put_form)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('membership_put_form', membership_put_form, ::Io::Flow::V0::Models::MembershipPutForm)
+            (x = membership_put_form; x.is_a?(::Io::Flow::V0::Models::MembershipPutForm) ? x : ::Io::Flow::V0::Models::MembershipPutForm.new(x))
             r = @client.request("/memberships/#{CGI.escape(id)}").with_json(membership_put_form.to_json).put
             ::Io::Flow::V0::Models::Membership.new(r)
           end
@@ -4047,7 +4047,7 @@ module Io
           # and the organization environment. Otherwise, returns 401 - this indicates
           # either the org does not exist or the user does not have access to the org.
           def post(organization_authorization_form)
-            HttpClient::Preconditions.assert_class('organization_authorization_form', organization_authorization_form, ::Io::Flow::V0::Models::OrganizationAuthorizationForm)
+            (x = organization_authorization_form; x.is_a?(::Io::Flow::V0::Models::OrganizationAuthorizationForm) ? x : ::Io::Flow::V0::Models::OrganizationAuthorizationForm.new(x))
             r = @client.request("/organization-authorizations").with_json(organization_authorization_form.to_json).post
             ::Io::Flow::V0::Models::OrganizationAuthorization.new(r)
           end
@@ -4121,13 +4121,13 @@ module Io
             query = {
               :expand => (x = opts.delete(:expand); x.nil? ? nil : HttpClient::Preconditions.assert_class('expand', x, Array).map { |v| HttpClient::Preconditions.assert_class('expand', v, String) })
             }.delete_if { |k, v| v.nil? }
-            HttpClient::Preconditions.assert_class('password_reset_form', password_reset_form, ::Io::Flow::V0::Models::PasswordResetForm)
+            (x = password_reset_form; x.is_a?(::Io::Flow::V0::Models::PasswordResetForm) ? x : ::Io::Flow::V0::Models::PasswordResetForm.new(x))
             r = @client.request("/users/passwords").with_query(query).with_json(password_reset_form.to_json).post
             ::Io::Flow::V0::Models::ExpandableUser.from_json(r)
           end
 
           def post_resets(password_reset_request_form)
-            HttpClient::Preconditions.assert_class('password_reset_request_form', password_reset_request_form, ::Io::Flow::V0::Models::PasswordResetRequestForm)
+            (x = password_reset_request_form; x.is_a?(::Io::Flow::V0::Models::PasswordResetRequestForm) ? x : ::Io::Flow::V0::Models::PasswordResetRequestForm.new(x))
             r = @client.request("/users/passwords/resets").with_json(password_reset_request_form.to_json).post
             nil
           end
@@ -4155,7 +4155,7 @@ module Io
 
           # Create a scheduled export.
           def post(scheduled_export_form)
-            HttpClient::Preconditions.assert_class('scheduled_export_form', scheduled_export_form, ::Io::Flow::V0::Models::ScheduledExportForm)
+            (x = scheduled_export_form; x.is_a?(::Io::Flow::V0::Models::ScheduledExportForm) ? x : ::Io::Flow::V0::Models::ScheduledExportForm.new(x))
             r = @client.request("/users/scheduled/exports").with_json(scheduled_export_form.to_json).post
             ::Io::Flow::V0::Models::ScheduledExport.new(r)
           end
@@ -4170,7 +4170,7 @@ module Io
           # Update a scheduled export.
           def put_by_id(id, scheduled_export_form)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('scheduled_export_form', scheduled_export_form, ::Io::Flow::V0::Models::ScheduledExportForm)
+            (x = scheduled_export_form; x.is_a?(::Io::Flow::V0::Models::ScheduledExportForm) ? x : ::Io::Flow::V0::Models::ScheduledExportForm.new(x))
             r = @client.request("/users/scheduled/exports/#{CGI.escape(id)}").with_json(scheduled_export_form.to_json).put
             ::Io::Flow::V0::Models::ScheduledExport.new(r)
           end
@@ -4197,7 +4197,7 @@ module Io
 
           def put_by_session(session, session_put_form)
             HttpClient::Preconditions.assert_class('session', session, String)
-            HttpClient::Preconditions.assert_class('session_put_form', session_put_form, ::Io::Flow::V0::Models::SessionPutForm)
+            (x = session_put_form; x.is_a?(::Io::Flow::V0::Models::SessionPutForm) ? x : ::Io::Flow::V0::Models::SessionPutForm.new(x))
             r = @client.request("/sessions/#{CGI.escape(session)}").with_json(session_put_form.to_json).put
             ::Io::Flow::V0::Models::Session.from_json(r)
           end
@@ -4211,21 +4211,21 @@ module Io
           # Resets the session based on the provided geo parameters.
           def put_reset_by_session(session, session_reset_form)
             HttpClient::Preconditions.assert_class('session', session, String)
-            HttpClient::Preconditions.assert_class('session_reset_form', session_reset_form, ::Io::Flow::V0::Models::SessionResetForm)
+            (x = session_reset_form; x.is_a?(::Io::Flow::V0::Models::SessionResetForm) ? x : ::Io::Flow::V0::Models::SessionResetForm.new(x))
             r = @client.request("/sessions/#{CGI.escape(session)}/reset").with_json(session_reset_form.to_json).put
             ::Io::Flow::V0::Models::Session.from_json(r)
           end
 
           def post_organizations_by_organization(organization, session_form)
             HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('session_form', session_form, ::Io::Flow::V0::Models::SessionForm)
+            (x = session_form; x.is_a?(::Io::Flow::V0::Models::SessionForm) ? x : ::Io::Flow::V0::Models::SessionForm.new(x))
             r = @client.request("/sessions/organizations/#{CGI.escape(organization)}").with_json(session_form.to_json).post
             ::Io::Flow::V0::Models::OrganizationSession.new(r)
           end
 
           def post_shopify_by_shop(shop, session_form)
             HttpClient::Preconditions.assert_class('shop', shop, String)
-            HttpClient::Preconditions.assert_class('session_form', session_form, ::Io::Flow::V0::Models::SessionForm)
+            (x = session_form; x.is_a?(::Io::Flow::V0::Models::SessionForm) ? x : ::Io::Flow::V0::Models::SessionForm.new(x))
             r = @client.request("/sessions/shopify/#{CGI.escape(shop)}").with_json(session_form.to_json).post
             ::Io::Flow::V0::Models::OrganizationSession.new(r)
           end
@@ -4239,7 +4239,7 @@ module Io
           end
 
           def post(session_authorization_form)
-            HttpClient::Preconditions.assert_class('session_authorization_form', session_authorization_form, ::Io::Flow::V0::Models::SessionAuthorizationForm)
+            (x = session_authorization_form; x.is_a?(::Io::Flow::V0::Models::SessionAuthorizationForm) ? x : ::Io::Flow::V0::Models::SessionAuthorizationForm.new(x))
             r = @client.request("/authorizations/sessions").with_json(session_authorization_form.to_json).post
             ::Io::Flow::V0::Models::SessionAuthorization.from_json(r)
           end
@@ -4308,7 +4308,7 @@ module Io
 
           # Create a new token for the requesting user
           def post(token_form)
-            HttpClient::Preconditions.assert_class('token_form', token_form, ::Io::Flow::V0::Models::TokenForm)
+            (x = token_form; x.is_a?(::Io::Flow::V0::Models::TokenForm) ? x : ::Io::Flow::V0::Models::TokenForm.from_json(x))
             r = @client.request("/tokens").with_json(token_form.to_json).post
             ::Io::Flow::V0::Models::Token.from_json(r)
           end
@@ -4338,7 +4338,7 @@ module Io
           # with a form body to enusre that the token itself is not logged in the
           # request logs.
           def post_authentications(token_authentication_form)
-            HttpClient::Preconditions.assert_class('token_authentication_form', token_authentication_form, ::Io::Flow::V0::Models::TokenAuthenticationForm)
+            (x = token_authentication_form; x.is_a?(::Io::Flow::V0::Models::TokenAuthenticationForm) ? x : ::Io::Flow::V0::Models::TokenAuthenticationForm.new(x))
             r = @client.request("/tokens/authentications").with_json(token_authentication_form.to_json).post
             ::Io::Flow::V0::Models::TokenReference.from_json(r)
           end
@@ -4352,7 +4352,7 @@ module Io
           end
 
           def post(token_validation_form)
-            HttpClient::Preconditions.assert_class('token_validation_form', token_validation_form, ::Io::Flow::V0::Models::TokenValidationForm)
+            (x = token_validation_form; x.is_a?(::Io::Flow::V0::Models::TokenValidationForm) ? x : ::Io::Flow::V0::Models::TokenValidationForm.new(x))
             r = @client.request("/token-validations").with_json(token_validation_form.to_json).post
             ::Io::Flow::V0::Models::TokenValidation.new(r)
           end
@@ -4400,7 +4400,7 @@ module Io
           # pending and will not be able to authenticate until approved by a member of
           # the Flow team.
           def post(user_form)
-            HttpClient::Preconditions.assert_class('user_form', user_form, ::Io::Flow::V0::Models::UserForm)
+            (x = user_form; x.is_a?(::Io::Flow::V0::Models::UserForm) ? x : ::Io::Flow::V0::Models::UserForm.new(x))
             r = @client.request("/users").with_json(user_form.to_json).post
             ::Io::Flow::V0::Models::User.new(r)
           end
@@ -4415,7 +4415,7 @@ module Io
           # Update a user.
           def put_by_id(id, user_put_form)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('user_put_form', user_put_form, ::Io::Flow::V0::Models::UserPutForm)
+            (x = user_put_form; x.is_a?(::Io::Flow::V0::Models::UserPutForm) ? x : ::Io::Flow::V0::Models::UserPutForm.new(x))
             r = @client.request("/users/#{CGI.escape(id)}").with_json(user_put_form.to_json).put
             ::Io::Flow::V0::Models::User.new(r)
           end
@@ -4423,7 +4423,7 @@ module Io
           # Update the password for a user.
           def patch_passwords_by_id(id, password_change_form)
             HttpClient::Preconditions.assert_class('id', id, String)
-            HttpClient::Preconditions.assert_class('password_change_form', password_change_form, ::Io::Flow::V0::Models::PasswordChangeForm)
+            (x = password_change_form; x.is_a?(::Io::Flow::V0::Models::PasswordChangeForm) ? x : ::Io::Flow::V0::Models::PasswordChangeForm.new(x))
             r = @client.request("/users/#{CGI.escape(id)}/passwords").with_json(password_change_form.to_json).patch
             nil
           end
@@ -4438,7 +4438,7 @@ module Io
           # Authenticates a user by email / password. Note only users that have a status
           # of active will be authorized.
           def post_authenticate(authentication_form)
-            HttpClient::Preconditions.assert_class('authentication_form', authentication_form, ::Io::Flow::V0::Models::AuthenticationForm)
+            (x = authentication_form; x.is_a?(::Io::Flow::V0::Models::AuthenticationForm) ? x : ::Io::Flow::V0::Models::AuthenticationForm.new(x))
             r = @client.request("/users/authenticate").with_json(authentication_form.to_json).post
             ::Io::Flow::V0::Models::User.new(r)
           end
