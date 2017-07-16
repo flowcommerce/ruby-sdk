@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.version           = `sem-info tag latest`.strip
   s.date              = Time.now.strftime('%Y-%m-%d')
   s.summary           = "Native ruby client for the Flow REST API."
-  s.description       = "Native ruby client for the Flow REST API. Detailed information at http://apidoc.me/flow"
+  s.description       = "Native ruby client for the Flow REST API. Detailed information at https://app.apibuilder.io/flow/api"
   s.authors           = ["Flow Commerce, Inc."]
   s.email             = 'tech@flow.io'
   s.licenses          = 'MIT'
