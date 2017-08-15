@@ -10,7 +10,6 @@ Gem::Specification.new do |s|
   s.licenses          = 'MIT'
 
   s.add_dependency('json')
-  s.add_dependency('bigdecimal')
 
   s.files             = %w( README.md )
   s.files             += Dir.glob("lib/**/*")
