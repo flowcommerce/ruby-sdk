@@ -735,31 +735,6 @@ module Io
             r.map { |x| ::Io::Flow::V0::Models::ItemMarginVersion.new(x) }
           end
 
-          def get_payment_method_rules_by_experience_key(organization, experience_key, incoming={})
-            HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('experience_key', experience_key, String)
-            opts = HttpClient::Helper.symbolize_keys(incoming)
-            query = {
-              :payment_method_type => (x = opts.delete(:payment_method_type); x.nil? ? nil : HttpClient::Preconditions.assert_class('payment_method_type', x, Array).map { |v| (x = v; x.is_a?(::Io::Flow::V0::Models::PaymentMethodType) ? x : ::Io::Flow::V0::Models::PaymentMethodType.apply(x)).value }),
-              :tags => (x = opts.delete(:tags); x.nil? ? nil : HttpClient::Preconditions.assert_class('tags', x, Array).map { |v| HttpClient::Preconditions.assert_class('tags', v, String) }),
-              :limit => HttpClient::Preconditions.assert_class('limit', (x = opts.delete(:limit); x.nil? ? 25 : x), Integer),
-              :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
-              :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "display_position" : x), String)
-            }.delete_if { |k, v| v.nil? }
-            r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(experience_key)}/payment-method-rules").with_query(query).get
-            r.map { |x| ::Io::Flow::V0::Models::PaymentMethodRule.new(x) }
-          end
-
-          # Change the ordering or payment tags for an experience. Every post must
-          # include one entry for each payment method offered by Flow.
-          def put_payment_method_rules_by_experience_key(organization, experience_key, experience_payment_method_rule_forms)
-            HttpClient::Preconditions.assert_class('organization', organization, String)
-            HttpClient::Preconditions.assert_class('experience_key', experience_key, String)
-            HttpClient::Preconditions.assert_class('experience_payment_method_rule_forms', experience_payment_method_rule_forms, Array).map { |v| (x = v; x.is_a?(::Io::Flow::V0::Models::ExperiencePaymentMethodRuleForm) ? x : ::Io::Flow::V0::Models::ExperiencePaymentMethodRuleForm.new(x)) }
-            r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(experience_key)}/payment-method-rules").with_json(experience_payment_method_rule_forms.map { |o| o.to_hash }.to_json).put
-            r.map { |x| ::Io::Flow::V0::Models::PaymentMethodRule.new(x) }
-          end
-
           def get_payment_method_types_by_experience_key(organization, experience_key, incoming={})
             HttpClient::Preconditions.assert_class('organization', organization, String)
             HttpClient::Preconditions.assert_class('experience_key', experience_key, String)
@@ -770,6 +745,31 @@ module Io
             }.delete_if { |k, v| v.nil? }
             r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(experience_key)}/payment-method-types").with_query(query).get
             r.map { |x| ::Io::Flow::V0::Models::PaymentMethodType.new(x) }
+          end
+
+          def get_payment_and_method_and_rules_by_experience_key(organization, experience_key, incoming={})
+            HttpClient::Preconditions.assert_class('organization', organization, String)
+            HttpClient::Preconditions.assert_class('experience_key', experience_key, String)
+            opts = HttpClient::Helper.symbolize_keys(incoming)
+            query = {
+              :payment_method_type => (x = opts.delete(:payment_method_type); x.nil? ? nil : HttpClient::Preconditions.assert_class('payment_method_type', x, Array).map { |v| (x = v; x.is_a?(::Io::Flow::V0::Models::PaymentMethodType) ? x : ::Io::Flow::V0::Models::PaymentMethodType.apply(x)).value }),
+              :tags => (x = opts.delete(:tags); x.nil? ? nil : HttpClient::Preconditions.assert_class('tags', x, Array).map { |v| HttpClient::Preconditions.assert_class('tags', v, String) }),
+              :limit => HttpClient::Preconditions.assert_class('limit', (x = opts.delete(:limit); x.nil? ? 25 : x), Integer),
+              :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
+              :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "display_position" : x), String)
+            }.delete_if { |k, v| v.nil? }
+            r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(experience_key)}/payment/method/rules").with_query(query).get
+            r.map { |x| ::Io::Flow::V0::Models::PaymentMethodRule.new(x) }
+          end
+
+          # Change the ordering or payment tags for an experience. Every post must
+          # include one entry for each payment method offered by Flow.
+          def put_payment_and_method_and_rules_by_experience_key(organization, experience_key, experience_payment_method_rule_forms)
+            HttpClient::Preconditions.assert_class('organization', organization, String)
+            HttpClient::Preconditions.assert_class('experience_key', experience_key, String)
+            HttpClient::Preconditions.assert_class('experience_payment_method_rule_forms', experience_payment_method_rule_forms, Array).map { |v| (x = v; x.is_a?(::Io::Flow::V0::Models::ExperiencePaymentMethodRuleForm) ? x : ::Io::Flow::V0::Models::ExperiencePaymentMethodRuleForm.new(x)) }
+            r = @client.request("/#{CGI.escape(organization)}/experiences/#{CGI.escape(experience_key)}/payment/method/rules").with_json(experience_payment_method_rule_forms.map { |o| o.to_hash }.to_json).put
+            r.map { |x| ::Io::Flow::V0::Models::PaymentMethodRule.new(x) }
           end
 
           # Returns information about a specific experience.
@@ -1399,7 +1399,7 @@ module Io
             @client = HttpClient::Preconditions.assert_class('client', client, ::Io::Flow::V0::Client)
           end
 
-          def get(organization, incoming={})
+          def get_payment_method_rules(organization, incoming={})
             HttpClient::Preconditions.assert_class('organization', organization, String)
             opts = HttpClient::Helper.symbolize_keys(incoming)
             query = {
@@ -1412,6 +1412,22 @@ module Io
               :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "display_position" : x), String)
             }.delete_if { |k, v| v.nil? }
             r = @client.request("/#{CGI.escape(organization)}/payment-method-rules").with_query(query).get
+            r.map { |x| ::Io::Flow::V0::Models::PaymentMethodRule.new(x) }
+          end
+
+          def get_payment_and_method_and_rules(organization, incoming={})
+            HttpClient::Preconditions.assert_class('organization', organization, String)
+            opts = HttpClient::Helper.symbolize_keys(incoming)
+            query = {
+              :country => (x = opts.delete(:country); x.nil? ? nil : HttpClient::Preconditions.assert_class('country', x, String)),
+              :currency => (x = opts.delete(:currency); x.nil? ? nil : HttpClient::Preconditions.assert_class('currency', x, String)),
+              :experience => (x = opts.delete(:experience); x.nil? ? nil : HttpClient::Preconditions.assert_class('experience', x, String)),
+              :ip => (x = opts.delete(:ip); x.nil? ? nil : HttpClient::Preconditions.assert_class('ip', x, String)),
+              :limit => HttpClient::Preconditions.assert_class('limit', (x = opts.delete(:limit); x.nil? ? 25 : x), Integer),
+              :offset => HttpClient::Preconditions.assert_class('offset', (x = opts.delete(:offset); x.nil? ? 0 : x), Integer),
+              :sort => HttpClient::Preconditions.assert_class('sort', (x = opts.delete(:sort); x.nil? ? "display_position" : x), String)
+            }.delete_if { |k, v| v.nil? }
+            r = @client.request("/#{CGI.escape(organization)}/payment/method/rules").with_query(query).get
             r.map { |x| ::Io::Flow::V0::Models::PaymentMethodRule.new(x) }
           end
 
@@ -12365,7 +12381,7 @@ module Io
         # rounding, shipping, etc.
         class AllocationDetailComponent < AllocationComponent
 
-          attr_reader :key, :total
+          attr_reader :key, :total, :price
 
           def initialize(incoming={})
             super(:discriminator => AllocationComponent::Types::ALLOCATION_DETAIL_COMPONENT)
@@ -12373,6 +12389,7 @@ module Io
             HttpClient::Preconditions.require_keys(opts, [:key, :total], 'AllocationDetailComponent')
             @key = (x = opts.delete(:key); x.is_a?(::Io::Flow::V0::Models::OrderPriceDetailComponentKey) ? x : ::Io::Flow::V0::Models::OrderPriceDetailComponentKey.apply(x))
             @total = (x = opts.delete(:total); x.is_a?(::Io::Flow::V0::Models::PriceWithBase) ? x : ::Io::Flow::V0::Models::PriceWithBase.new(x))
+            @price = (x = opts.delete(:price); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::V0::Models::PriceWithBase) ? x : ::Io::Flow::V0::Models::PriceWithBase.new(x)))
           end
 
           def to_json
@@ -12386,7 +12403,8 @@ module Io
           def subtype_to_hash
             {
               :key => key.value,
-              :total => total.to_hash
+              :total => total.to_hash,
+              :price => price.nil? ? nil : price.to_hash
             }
           end
 
@@ -12395,7 +12413,7 @@ module Io
         # Represents either a VAT or duty component.
         class AllocationLevyComponent < AllocationComponent
 
-          attr_reader :key, :total, :rate, :name
+          attr_reader :key, :total, :rate, :name, :price
 
           def initialize(incoming={})
             super(:discriminator => AllocationComponent::Types::ALLOCATION_LEVY_COMPONENT)
@@ -12405,6 +12423,7 @@ module Io
             @total = (x = opts.delete(:total); x.is_a?(::Io::Flow::V0::Models::PriceWithBase) ? x : ::Io::Flow::V0::Models::PriceWithBase.new(x))
             @rate = HttpClient::Preconditions.assert_class('rate', HttpClient::Helper.to_big_decimal(opts.delete(:rate)), BigDecimal)
             @name = HttpClient::Preconditions.assert_class('name', opts.delete(:name), String)
+            @price = (x = opts.delete(:price); x.nil? ? nil : (x = x; x.is_a?(::Io::Flow::V0::Models::PriceWithBase) ? x : ::Io::Flow::V0::Models::PriceWithBase.new(x)))
           end
 
           def to_json
@@ -12420,7 +12439,8 @@ module Io
               :key => key.value,
               :total => total.to_hash,
               :rate => rate,
-              :name => name
+              :name => name,
+              :price => price.nil? ? nil : price.to_hash
             }
           end
 
