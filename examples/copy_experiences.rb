@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'copy_experience_util.rb')
+load File.join(File.dirname(__FILE__), 'copy_experience_util.rb')
 
 module CopyExperiences
 

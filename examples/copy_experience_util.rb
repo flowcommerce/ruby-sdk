@@ -92,28 +92,48 @@ module CopyExperienceUtil
         puts "            - outcome: #{rule.outcome.to_hash.to_s}"
       end
 
-      # POST /:organization/tiers
-      new_tier = target_client.tiers.post(
-        target_org,
-        ::Io::Flow::V0::Models::TierForm.new(
-          :name => tier.name,
-          :experience => tier.experience.id,
-          :currency => tier.experience.currency,
-          :integration => tier.integration,
-          :visibility => tier.visibility,
-          :strategy => tier.strategy,
-          :services => tier.services.map{|s| s.id},
-          :rules => rules.map {|rule|
-            ::Io::Flow::V0::Models::TierRuleForm.new(
-              :position => rule.position,
-              :query => rule.query,
-              :outcome => rule.outcome.to_json
+      existing = target_client.tiers.get(target_org, :limit => 100).find { |t|
+        t.name == tier.name
+      }
+
+      if existing
+        puts "        - TIER NAMED' #{existing.name} already exists - skipping"
+      else
+        # POST /:organization/tiers
+        new_tier = target_client.tiers.post(
+          target_org,
+          ::Io::Flow::V0::Models::TierForm.new(
+            :name => tier.name,
+            :experience => tier.experience.id,
+            :currency => tier.experience.currency,
+            :integration => tier.integration,
+            :visibility => tier.visibility,
+            :strategy => tier.strategy,
+            :services => tier.services.map{|s| s.id},
+            :rules => rules.map {|rule|
+              ::Io::Flow::V0::Models::TierRuleForm.new(
+                :position => rule.position,
+                :query => rule.query,
+                :outcome => to_outcome_form(rule.outcome)
             )
-          }
+            }
+          )
         )
-      )
-      puts "        - CREATED NEW TIER: ID: #{new_tier.id}, NAME: #{new_tier.name}, SERVICES: #{new_tier.services.map{|s| s.id}}"
+        puts "        - CREATED NEW TIER: ID: #{new_tier.id}, NAME: #{new_tier.name}, SERVICES: #{new_tier.services.map{|s| s.id}}"
+      end
     end
   end
 
+  def CopyExperienceUtil.to_outcome_form(outcome)
+    case outcome.discriminator
+    when ::Io::Flow::V0::Models::TierRuleOutcome::Types::AMOUNT_MARGIN
+    then ::Io::Flow::V0::Models::AmountMarginForm.new(:margin => outcome.margin.to_hash)
+    when ::Io::Flow::V0::Models::TierRuleOutcome::Types::AT_COST
+    then {:discriminator => ::Io::Flow::V0::Models::TierRuleOutcomeForm::Types::AT_COST}
+    when ::Io::Flow::V0::Models::TierRuleOutcome::Types::FLAT_RATE
+    then ::Io::Flow::V0::Models::FlatRateForm.new(:price => outcome.price.to_hash)
+    else
+      raise "Cannot create outcome form for discriminator: #{outcome.discriminator}"
+    end
+  end
 end
