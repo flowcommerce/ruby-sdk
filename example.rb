@@ -35,7 +35,27 @@ client = begin
 
 org = ARGV.shift.to_s.strip
 if org == ""
-  orgs = client.organizations.get(:sort => 'id')
+  orgs = begin
+           client.organizations.get(:sort => 'id', :limit => 100)
+         rescue Exception => e
+           if e.is_a?(Io::Flow::V0::HttpClient::ServerError)
+             puts ""
+             if e.code == 401
+               puts "ERROR: Your API Key is not valid. Please check your API key and try again."
+             else
+               puts "SYSTEM ERROR: #{e}"
+             end
+             exit(1)
+           elsif e.to_s.downcase.include?("nodename nor servname provided")
+             puts ""
+             puts "ERROR: Cannot connect to the web. Please check your network connection"
+             exit(1)
+           else
+             puts ""
+             puts "SYSTEM ERROR: #{e}"
+             exit(1)
+           end
+         end
 
   if orgs.empty?
     puts "*** ERROR: Your account is not associated with any organizations"

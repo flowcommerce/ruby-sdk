@@ -1,0 +1,5 @@
+---
+flow:
+  api:
+    ruby_client:
+    - lib/flow_commerce/flow_api_v0_client.rb
