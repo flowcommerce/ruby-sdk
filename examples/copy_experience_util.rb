@@ -112,6 +112,7 @@ module CopyExperienceUtil
       puts "        - visibility: #{tier.visibility.value}"
       puts "        - strategy: #{tier.strategy.value}"
       puts "        - services: #{tier.services.map{|s| s.id}}"
+      puts "        - direction: #{tier.direction.to_s}"
 
       # tier rules
       rules = tier.rules
@@ -122,7 +123,7 @@ module CopyExperienceUtil
         puts "            - outcome: #{rule.outcome.to_hash.to_s}"
       end
 
-      existing = target_client.tiers.get(target_org, :limit => 100).find { |t|
+      existing = target_client.tiers.get(target_org, :experience => tier.experience.id, :tier_direction => tier.direction, :limit => 100).find { |t|
         t.name == tier.name
       }
 
@@ -134,6 +135,7 @@ module CopyExperienceUtil
           target_org,
           ::Io::Flow::V0::Models::TierForm.new(
             :name => tier.name,
+            :direction => tier.direction,
             :experience => tier.experience.id,
             :currency => tier.experience.currency,
             :integration => tier.integration,
