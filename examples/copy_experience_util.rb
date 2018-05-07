@@ -44,7 +44,7 @@ module CopyExperienceUtil
       target_org,
       new_experience.key,
       ::Io::Flow::V0::Models::ExperienceStatusForm.new(
-        :status => ExperienceStatus.from_string(exp.status)
+        :status => ::Io::Flow::V0::Models::ExperienceStatus.from_string(exp.status)
       )
     )
 
