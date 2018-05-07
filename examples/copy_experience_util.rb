@@ -40,13 +40,31 @@ module CopyExperienceUtil
     )
 
     # PUT /:organization/experiences/:key/status
-    new_experience = target_client.experiences.put_status_by_key(
-      target_org,
-      new_experience.key,
-      ::Io::Flow::V0::Models::ExperienceStatusForm.new(
-        :status => exp.status
+    # if status of experience to copy is archived, need to activate it first, then archive after
+    if exp.status == ::Io::Flow::V0::Models::ExperienceStatus.draft
+      # do nothing - return the experience
+      new_experience
+    else
+      # activate first
+      new_experience = target_client.experiences.put_status_by_key(
+        target_org,
+        new_experience.key,
+        ::Io::Flow::V0::Models::ExperienceStatusForm.new(
+          :status => ::Io::Flow::V0::Models::ExperienceStatus.active
+        )
       )
-    )
+
+      # if archived, then archive it
+      if exp.status == ::Io::Flow::V0::Models::ExperienceStatus.archived
+        new_experience = target_client.experiences.put_status_by_key(
+          target_org,
+          new_experience.key,
+          ::Io::Flow::V0::Models::ExperienceStatusForm.new(
+            :status => ::Io::Flow::V0::Models::ExperienceStatus.archiving
+          )
+        )
+      end
+    end
 
     puts "    - UPSERTED EXPERIENCE: ID: #{new_experience.id}, KEY: #{new_experience.key}, NAME: #{new_experience.name} STATUS: #{new_experience.status}"
   end
