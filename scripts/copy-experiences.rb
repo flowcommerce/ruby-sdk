@@ -66,7 +66,7 @@ def copy_experience(client, org, exp)
 end
 
 source_client = client(source_org)
-target_client = client(source_org)
+target_client = client(target_org)
 
 each_experience(source_client, source_org) do |exp|
   puts "%s/%s" % [source_org, exp.key]
