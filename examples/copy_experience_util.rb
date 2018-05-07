@@ -38,7 +38,17 @@ module CopyExperienceUtil
         :subcatalog_id => subcatalog_id
       )
     )
-    puts "    - UPSERTED EXPERIENCE: ID: #{new_experience.id}, KEY: #{new_experience.key}, NAME: #{new_experience.name}"
+
+    # PUT /:organization/experiences/:key/status
+    new_experience = target_client.experiences.put_status_by_key(
+      target_org,
+      new_experience.key,
+      ::Io::Flow::V0::Models::ExperienceStatusForm.new(
+        :status => ExperienceStatus.from_string(exp.status)
+      )
+    )
+
+    puts "    - UPSERTED EXPERIENCE: ID: #{new_experience.id}, KEY: #{new_experience.key}, NAME: #{new_experience.name} STATUS: #{new_experience.status}"
   end
 
   def CopyExperienceUtil.copy_pricing(client, org, target_client, target_org, exp)
