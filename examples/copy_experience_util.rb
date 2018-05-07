@@ -64,6 +64,8 @@ module CopyExperienceUtil
           )
         )
       end
+
+      new_experience
     end
 
     puts "    - UPSERTED EXPERIENCE: ID: #{new_experience.id}, KEY: #{new_experience.key}, NAME: #{new_experience.name} STATUS: #{new_experience.status}"
