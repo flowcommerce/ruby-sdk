@@ -7,7 +7,16 @@ module DeleteAllExperiences
       exit(1)
     end
 
-    client.experiences.get(org).each do |exp|
+    offset = 0
+    limit = 100
+    experiences = client.experiences.get(org, :limit => limit, :offset => offset, :order => "position")
+    if experiences.size > 0
+      offset = offset + limit
+      experiences << client.experiences.get(org, :limit => limit, :offset => offset, :order => "position")
+    end
+    experiences.flatten!
+
+    experiences.each do |exp|
       puts " - Deleting experience name[%s] key[%s] region[%s]" % [exp.name, exp.key, exp.region.id]
       begin
         client.experiences.delete_by_key(org, exp.key)

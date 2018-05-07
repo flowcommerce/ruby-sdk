@@ -38,7 +38,37 @@ module CopyExperienceUtil
         :subcatalog_id => subcatalog_id
       )
     )
-    puts "    - UPSERTED EXPERIENCE: ID: #{new_experience.id}, KEY: #{new_experience.key}, NAME: #{new_experience.name}"
+
+    # PUT /:organization/experiences/:key/status
+    # if status of experience to copy is archived, need to activate it first, then archive after
+    if exp.status == ::Io::Flow::V0::Models::ExperienceStatus.draft
+      # do nothing - return the experience
+      new_experience
+    else
+      # activate first
+      new_experience = target_client.experiences.put_status_by_key(
+        target_org,
+        new_experience.key,
+        ::Io::Flow::V0::Models::ExperienceStatusForm.new(
+          :status => ::Io::Flow::V0::Models::ExperienceStatus.active
+        )
+      )
+
+      # if archived, then archive it
+      if exp.status == ::Io::Flow::V0::Models::ExperienceStatus.archived
+        new_experience = target_client.experiences.put_status_by_key(
+          target_org,
+          new_experience.key,
+          ::Io::Flow::V0::Models::ExperienceStatusForm.new(
+            :status => ::Io::Flow::V0::Models::ExperienceStatus.archiving
+          )
+        )
+      end
+
+      new_experience
+    end
+
+    puts "    - UPSERTED EXPERIENCE: ID: #{new_experience.id}, KEY: #{new_experience.key}, NAME: #{new_experience.name} STATUS: #{new_experience.status}"
   end
 
   def CopyExperienceUtil.copy_pricing(client, org, target_client, target_org, exp)
@@ -82,6 +112,7 @@ module CopyExperienceUtil
       puts "        - visibility: #{tier.visibility.value}"
       puts "        - strategy: #{tier.strategy.value}"
       puts "        - services: #{tier.services.map{|s| s.id}}"
+      puts "        - direction: #{tier.direction.to_s}"
 
       # tier rules
       rules = tier.rules
@@ -92,7 +123,7 @@ module CopyExperienceUtil
         puts "            - outcome: #{rule.outcome.to_hash.to_s}"
       end
 
-      existing = target_client.tiers.get(target_org, :limit => 100).find { |t|
+      existing = target_client.tiers.get(target_org, :experience => tier.experience.id, :tier_direction => tier.direction, :limit => 100).find { |t|
         t.name == tier.name
       }
 
@@ -104,6 +135,7 @@ module CopyExperienceUtil
           target_org,
           ::Io::Flow::V0::Models::TierForm.new(
             :name => tier.name,
+            :direction => tier.direction,
             :experience => tier.experience.id,
             :currency => tier.experience.currency,
             :integration => tier.integration,

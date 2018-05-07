@@ -14,7 +14,15 @@ module CopyExperiences
     target_client = FlowCommerce.instance(:token => target_token)
 
     # get all experiences from base org
-    experiences = client.experiences.get(org, :limit => 100, :order => "position")
+    offset = 0
+    limit = 100
+    experiences = client.experiences.get(org, :limit => limit, :offset => offset, :order => "position")
+    if experiences.size > 0
+      offset = offset + limit
+      experiences << client.experiences.get(org, :limit => limit, :offset => offset, :order => "position")
+    end
+    experiences.flatten!
+
     max = experiences.size
 
     # iterate through experiences
