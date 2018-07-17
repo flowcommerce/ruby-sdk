@@ -31,7 +31,16 @@ module CopyExperiences
 
       CopyExperienceUtil.copy_experience(client, org, target_client, target_org, exp)
       CopyExperienceUtil.copy_pricing(client, org, target_client, target_org, exp)
-      CopyExperienceUtil.copy_tiers(client, org, target_client, target_org, exp)
+      begin
+        CopyExperienceUtil.copy_tiers(client, org, target_client, target_org, exp)
+      rescue Exception => e
+        puts ""
+        puts ""
+        puts "*** ERROR ***"
+        puts "error copying tiers for experience[#{exp.key}] - skipping"
+        puts ""
+        puts ""
+      end
 
       puts ""
     end
