@@ -24,11 +24,6 @@ def client(org)
   FlowCommerce.instance(:token => IO.read(path).strip)
 end
 
-# function to get all tiers of the experience
-def tiers(client, org, exp, limit=100, offset=0)
-  client.tiers.get(org, :experience => exp.key, :limit => limit, :offset => offset)
-end
-
 # function to get all the experiences
 def each_experience(client, org, limit=200, offset=0, &block)
   all = client.experiences.get(org, :limit => limit, :offset => offset)
@@ -42,16 +37,26 @@ def each_experience(client, org, limit=200, offset=0, &block)
   end
 end
 
+def default_shipping_configuration(client, org)
+  form = ::Io::Flow::V0::Models::ShippingConfigurationForm.new(
+    :name => "default"
+  )
+  client.shipping_configurations.put_by_key(org, "default", form)
+end
+
 # get a client for the organziation
 client = client(org)
+
+# upsert the default shipping configuration
+default_config = default_shipping_configuration(client, org)
+puts default_config.to_json
+raise "--------------------------------------------"
 
 # iterate through all the experiences
 each_experience(client, org) do |exp|
   puts "ORG[#{org}] EXPERIENCE[#{exp.key}] INSPECT: #{exp.to_json}"
-  puts "-------"
-  tiers(client, org, exp).each do |tier|
-    puts "TIER: #{tier.name} INSPECT: #{tier.to_json}"
-    puts "-------"
+  client.tiers.get(org, :experience => exp.key).each do |tier|
+    puts "TIER: #{tier.name}"
   end
   puts "======================================================================================="
 end
