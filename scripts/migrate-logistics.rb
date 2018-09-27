@@ -22,7 +22,7 @@ end
 def client(org)
   path = File.expand_path("~/.flow/%s" % org)
   if !File.exists?(path)
-    puts "Error: Expected API token for org %s to be in file at %s" % [org, path]
+    puts "Error: Token for org %s not in path %s" % [org, path]
     exit(1)
   end
   FlowCommerce.instance(:token => IO.read(path).strip)
@@ -48,19 +48,21 @@ def default_shipping_configuration(client, org)
   client.shipping_configurations.put_by_key(org, "default", form)
 end
 
+def tiers(client, org, exp)
+  client.tiers.get(org, :experience => exp.key)
+end
+
 # get a client for the organziation
 client = client(org)
 
 # upsert the default shipping configuration
 default_config = default_shipping_configuration(client, org)
-puts default_config.to_json
-raise "--------------------------------------------"
 
 # iterate through all the experiences
 each_experience(client, org) do |exp|
-  puts "ORG[#{org}] EXPERIENCE[#{exp.key}] INSPECT: #{exp.to_json}"
-  client.tiers.get(org, :experience => exp.key).each do |tier|
-    puts "TIER: #{tier.name}"
+  puts "ORG[#{org}] EXPERIENCE[#{exp.key}] STATUS:[#{exp.status.value}]"
+  tiers(client, org, exp).each do |tier|
+    puts "  TIER: #{tier.name} JSON: #{tier.to_json}"
   end
-  puts "======================================================================================="
+  puts "=========" * 15
 end
