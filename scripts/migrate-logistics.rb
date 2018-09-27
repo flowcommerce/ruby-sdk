@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 
-# Copies experiences from a source org to a target org
+# Create a new default shipping configuration for use in logistics v2.
+# Migrates all experiences to use the default shipping configuration.
+#
+# For orgs with configured experiments involving shipping, it will need to
+# be manually configured for now.
 #
 # Example:
 #  ./migrate-logistics.rb test-org-1 test-org-2
