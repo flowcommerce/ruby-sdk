@@ -161,7 +161,15 @@ each_experience(client, org) do |exp|
   puts "Updated Experience[#{exp.key}] to new default shipping configuration"
 end
 
+# sleep for a few seconds
+seconds = 20
+puts "SLEEPING FOR #{seconds} SECONDS TO WAIT FOR EVENTS TO PROPAGATE"
+sleep(seconds)
+
+# iterate through old shipping configurations and delete
+=begin
 each_shipping_configuration(client, org) do |sc|
   client.shipping_configurations.delete_by_key(org, sc.key)
   puts "Deleted Shipping configuration #{sc.key}"
 end
+=end
