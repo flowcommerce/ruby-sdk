@@ -7,7 +7,7 @@
 # be manually configured for now.
 #
 # Example:
-#  ./migrate-logistics.rb test-org-1 test-org-2
+#  ./migrate-logistics.rb test-org-1
 #
 require 'flowcommerce'
 
