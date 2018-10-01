@@ -42,6 +42,20 @@ def each_experience(client, org, limit=200, offset=0, &block)
   end
 end
 
+# function to get all the shipping configurations
+def each_shipping_configuration(client, org, limit=200, offset=0, &block)
+  all = client.shipping_configurations.get(org, :limit => limit, :offset => offset)
+
+  all.each do |sc|
+    next if sc.type != ::Io::Flow::V0::Models::ShippingConfigurationType.variant
+    yield sc
+  end
+
+  if all.size >= limit
+    each_shipping_configuration(client, org, limit, offset + limit, &block)
+  end
+end
+
 def default_shipping_configuration(client, org)
   form = ::Io::Flow::V0::Models::ShippingConfigurationForm.new(
     :name => "default"
@@ -145,4 +159,9 @@ each_experience(client, org) do |exp|
   )
   client.experience_logistics_settings.put(org, exp.key, form)
   puts "Updated Experience[#{exp.key}] to new default shipping configuration"
+end
+
+each_shipping_configuration(client, org) do |sc|
+  client.shipping_configurations.delete_by_key(org, sc.key)
+  puts "Deleted Shipping configuration #{sc.key}"
 end
