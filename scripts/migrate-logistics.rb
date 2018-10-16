@@ -146,11 +146,10 @@ each_experience(client, org) do |exp|
   puts "=========" * 12
 end
 
-# sleep for a few seconds
-seconds = 20
-puts "SLEEPING FOR #{seconds} SECONDS TO WAIT FOR EVENTS TO PROPAGATE"
-sleep(seconds)
-
+####################################################################
+# BELOW STUFF IS ONLY FOR ORGS ON LOGISTICS V2 FEATURE!
+####################################################################
+=begin
 # iterate through experiences again and assign logistics settings
 each_experience(client, org) do |exp|
   next if exp.status != ::Io::Flow::V0::Models::ExperienceStatus.active
@@ -167,7 +166,6 @@ puts "SLEEPING FOR #{seconds} SECONDS TO WAIT FOR EVENTS TO PROPAGATE"
 sleep(seconds)
 
 # iterate through old shipping configurations and delete
-=begin
 each_shipping_configuration(client, org) do |sc|
   client.shipping_configurations.delete_by_key(org, sc.key)
   puts "Deleted Shipping configuration #{sc.key}"
