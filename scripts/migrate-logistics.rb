@@ -141,7 +141,11 @@ each_experience(client, org) do |exp|
   # iterate through the tiers and create new ones in the shipping lane
   tiers(client, org, exp).each do |tier|
     puts "    TIER: #{tier.name}"
-    create_tier(client, org, exp, shipping_lane, tier)
+    begin
+      create_tier(client, org, exp, shipping_lane, tier)
+    rescue Exception => e
+      puts "    ERROR: #{e.message}"
+    end
   end
   puts "=========" * 12
 end
