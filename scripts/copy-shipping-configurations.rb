@@ -3,7 +3,7 @@
 # Copies shipping configurations from a source org to a target org
 #
 # Example:
-#  ./copy-experiences.rb test-org-1 test-org-2
+#  ./copy-shipping-configurations.rb test-org-1 test-org-2
 #
 require 'flowcommerce'
 
