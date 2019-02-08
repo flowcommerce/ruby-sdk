@@ -11,7 +11,7 @@ source_org = ARGV.shift.to_s.strip
 target_org = ARGV.shift.to_s.strip
 
 if source_org.empty? || target_org.empty?
-  puts "usage: copy-experiences.rb <source organization id> <target organization id>"
+  puts "usage: copy-shipping-configurations.rb <source organization id> <target organization id>"
   exit(1)
 else
   puts "Copying shipping configurations from #{source_org} to #{target_org}"
