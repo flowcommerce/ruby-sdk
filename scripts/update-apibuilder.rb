@@ -11,7 +11,8 @@
 
 dir = File.dirname(__FILE__)
 
-def extract_version(path)
+def extract_version(version, path)
+  `git checkout #{version}`
   IO.readlines(path).each do |l|
     if md = l.strip.match(/apibuilder\s+([\d\.]+)/i)
       return md[1]
@@ -23,9 +24,9 @@ def extract_version(path)
 end
 
 path = File.join(dir, "../lib/flow_commerce/flow_api_v0_client.rb")
-current = extract_version(path)
+current = extract_version(`sem-info tag latest`, path)
 system("cd %s && apibuilder update" % File.join(dir, ".."))
-latest = extract_version(path)
+latest = extract_version('master', path)
 
 msg = []
 
