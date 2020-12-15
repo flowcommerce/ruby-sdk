@@ -2,13 +2,6 @@
 
 Native ruby client to the Flow API (https://api.flow.io)
 
-## Status
-
-Please note that this library and APIs are in ALPHA and are subject to
-change and will break in the future. Once Flow Commerce releases its
-official 1.0 library, API changes will be backwards compatible. Until
-then - we are super grateful for your patience as we finalize the API
-for our launch.
 
 ## Installation
 
