@@ -29,7 +29,7 @@ end
 path = File.join(dir, "../lib/flow_commerce/flow_api_v0_client.rb")
 checkout_version(`sem-info tag latest`)
 current = extract_version(path)
-checkout_version("master")
+checkout_version("main")
 system("cd %s && apibuilder update" % File.join(dir, ".."))
 latest = extract_version(path)
 
