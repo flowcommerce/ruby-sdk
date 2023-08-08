@@ -17,7 +17,7 @@ end
 
 def extract_version(path)
   IO.readlines(path).each do |l|
-    if md = l.strip.match(/apibuilder\s+([\d\.]+)/i)
+    if md = l.strip.match(/# Service version:\s+([\d\.]+)/i)
       return md[1]
     end
   end
@@ -29,13 +29,15 @@ end
 path = File.join(dir, "../lib/flow_commerce/flow_api_v0_client.rb")
 checkout_version(`sem-info tag latest`)
 current = extract_version(path)
-checkout_version("master")
+checkout_version("main")
 system("cd %s && apibuilder update" % File.join(dir, ".."))
 latest = extract_version(path)
 
 msg = []
 
 if current == latest
+  puts "current: #{current}, latest: #{latest}"
+
   diff = `git diff lib/flow_commerce/flow_api_v0_client.rb`.strip
   if diff.empty?
     puts "apibuilder API version remains at %s" % current
@@ -50,4 +52,3 @@ else
 end
 
 system("git commit -m '%s' lib/flow_commerce/flow*rb" % msg.join("\n"))
-
